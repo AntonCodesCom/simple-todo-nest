@@ -6,13 +6,25 @@ import {
   Patch,
   Param,
   Delete,
+  UseInterceptors,
 } from '@nestjs/common';
 import { TodoService } from './todo.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiInternalServerErrorResponse,
+  ApiOkResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import { AuthInterceptor } from 'src/auth/auth.interceptor';
 
+@UseInterceptors(AuthInterceptor)
+@ApiBearerAuth()
 @ApiTags('todo')
+@ApiUnauthorizedResponse()
+@ApiInternalServerErrorResponse()
 @Controller('todo')
 export class TodoController {
   constructor(private readonly todoService: TodoService) {}
@@ -22,6 +34,7 @@ export class TodoController {
   //   return this.todoService.create(createTodoDto);
   // }
 
+  @ApiOkResponse() // TODO: type
   @Get()
   findAll() {
     return this.todoService.findAll();
