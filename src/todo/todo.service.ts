@@ -4,6 +4,7 @@ import { UpdateTodoDto } from './dto/update-todo.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import todos from './fixtures/todos';
 import { EnvService } from 'src/env/env.service';
+import { TodoEntity } from './entities/todo.entity';
 
 @Injectable()
 export class TodoService {
@@ -12,25 +13,27 @@ export class TodoService {
     private readonly prismaService: PrismaService,
   ) {}
 
-  create(createTodoDto: CreateTodoDto) {
-    return 'This action adds a new todo';
+  // create(createTodoDto: CreateTodoDto) {
+  //   return 'This action adds a new todo';
+  // }
+
+  async findAllByUserId(userId: string): Promise<TodoEntity[]> {
+    return await this.prismaService.todo.findMany({
+      where: { userId },
+    });
   }
 
-  findAll() {
-    return `This action returns all todo`;
-  }
+  // findOne(id: number) {
+  //   return `This action returns a #${id} todo`;
+  // }
 
-  findOne(id: number) {
-    return `This action returns a #${id} todo`;
-  }
+  // update(id: number, updateTodoDto: UpdateTodoDto) {
+  //   return `This action updates a #${id} todo`;
+  // }
 
-  update(id: number, updateTodoDto: UpdateTodoDto) {
-    return `This action updates a #${id} todo`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} todo`;
-  }
+  // remove(id: number) {
+  //   return `This action removes a #${id} todo`;
+  // }
 
   async clear(): Promise<void> {
     if (this.envService.isProd) {

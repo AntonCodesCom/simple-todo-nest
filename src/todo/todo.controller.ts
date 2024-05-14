@@ -19,6 +19,8 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { AuthInterceptor } from 'src/auth/auth.interceptor';
+import UserId from 'src/auth/user-id.decorator';
+import { TodoEntity } from './entities/todo.entity';
 
 @UseInterceptors(AuthInterceptor)
 @ApiBearerAuth()
@@ -34,10 +36,13 @@ export class TodoController {
   //   return this.todoService.create(createTodoDto);
   // }
 
-  @ApiOkResponse() // TODO: type
+  @ApiOkResponse({
+    type: TodoEntity,
+    isArray: true,
+  })
   @Get()
-  findAll() {
-    return this.todoService.findAll();
+  findAllByUserId(@UserId() userId: string) {
+    return this.todoService.findAllByUserId(userId);
   }
 
   // @Get(':id')
