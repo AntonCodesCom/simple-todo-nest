@@ -12,23 +12,23 @@ async function bootstrap() {
   const { isProd, port } = app.get(EnvService);
 
   // swagger (non-prod only)
-  if (!isProd) {
-    const config = new DocumentBuilder()
-      .setTitle('Todo app API')
-      .setDescription('REST API for the todo app backend (built on NestJS).')
-      .setVersion('0.0.1')
-      .addBearerAuth({
-        type: 'http',
-        scheme: 'bearer',
-        bearerFormat: 'JWT',
-        in: 'header',
-      })
-      .addTag('seed')
-      .addTag('todo')
-      .build();
-    const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('api', app, document);
-  }
+  // if (!isProd) {
+  const config = new DocumentBuilder()
+    .setTitle('Todo app API')
+    .setDescription('REST API for the todo app backend (built on NestJS).')
+    .setVersion('0.0.1')
+    .addBearerAuth({
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'uuid',
+      in: 'header',
+    })
+    .addTag('seed')
+    .addTag('todo')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
+  // }
 
   // launch
   await app.listen(port);
