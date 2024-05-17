@@ -14,7 +14,7 @@ export class TodoEntity implements TodoModel {
   id: string;
 
   @ApiProperty({
-    type: 'uuid',
+    format: 'uuid',
     example: aliceUserId,
   })
   userId: string;
@@ -28,6 +28,11 @@ export class TodoEntity implements TodoModel {
     type: 'boolean',
   })
   done: boolean;
+
+  @ApiProperty({
+    type: Date,
+  })
+  createdAt: Date;
 }
 
 function initTodo(partial: Partial<TodoEntity>): TodoEntity {
@@ -36,6 +41,7 @@ function initTodo(partial: Partial<TodoEntity>): TodoEntity {
     userId: partial.userId || aliceUserId,
     label: partial.label ?? faker.lorem.sentence(),
     done: partial.done ?? faker.datatype.boolean(),
+    createdAt: partial.createdAt || new Date(),
   };
 }
 

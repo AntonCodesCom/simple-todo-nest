@@ -7,16 +7,19 @@ const todos: TodoEntity[] = initTodos([
     userId: aliceUserId,
     label: 'Initialize Remix frontend.',
     done: true,
+    createdAt: new Date('2024-05-17T20:00:00.000Z'),
   },
   {
     userId: aliceUserId,
     label: 'Setup NestJS backend.',
     done: true,
+    createdAt: new Date('2024-05-17T20:10:00.000Z'),
   },
   {
     userId: aliceUserId,
     label: 'Integrate frontend with backend.',
     done: false,
+    createdAt: new Date('2024-05-17T20:20:00.000Z'),
   },
   {
     userId: bobUserId,

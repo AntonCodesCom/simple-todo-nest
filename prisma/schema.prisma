@@ -18,4 +18,5 @@ model Todo {
   userId String
   label String
   done Boolean @default(false)
+  createdAt DateTime @default(now())
 }

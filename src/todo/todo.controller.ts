@@ -41,8 +41,9 @@ export class TodoController {
     isArray: true,
   })
   @Get()
-  findAllByUserId(@UserId() userId: string) {
-    return this.todoService.findAllByUserId(userId);
+  async findAllByUserId(@UserId() userId: string): Promise<TodoEntity[]> {
+    const todos = await this.todoService.findAllByUserId(userId);
+    return todos.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
   }
 
   // @Get(':id')
