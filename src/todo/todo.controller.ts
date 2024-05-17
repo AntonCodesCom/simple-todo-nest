@@ -12,6 +12,7 @@ import { TodoService } from './todo.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
@@ -35,6 +36,7 @@ export class TodoController {
   @ApiCreatedResponse({
     type: TodoEntity,
   })
+  @ApiBadRequestResponse()
   @Post()
   create(
     @Body() createTodoDto: CreateTodoDto,
