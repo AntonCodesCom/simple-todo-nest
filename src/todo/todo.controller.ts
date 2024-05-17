@@ -13,6 +13,7 @@ import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import {
   ApiBearerAuth,
+  ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiOkResponse,
   ApiTags,
@@ -31,10 +32,16 @@ import { TodoEntity } from './entities/todo.entity';
 export class TodoController {
   constructor(private readonly todoService: TodoService) {}
 
-  // @Post()
-  // create(@Body() createTodoDto: CreateTodoDto) {
-  //   return this.todoService.create(createTodoDto);
-  // }
+  @ApiCreatedResponse({
+    type: TodoEntity,
+  })
+  @Post()
+  create(
+    @Body() createTodoDto: CreateTodoDto,
+    @UserId() userId: string,
+  ): Promise<TodoEntity> {
+    return this.todoService.create(createTodoDto, userId);
+  }
 
   @ApiOkResponse({
     type: TodoEntity,
