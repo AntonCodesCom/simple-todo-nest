@@ -19,10 +19,15 @@ export class TodoEntity implements TodoModel {
   label: string;
 
   @ApiProperty({
-    type: 'uuid',
+    format: 'uuid',
     example: aliceUserId,
   })
   userId: string;
+
+  @ApiProperty({
+    type: Date,
+  })
+  createdAt: Date;
 }
 
 function initTodo(partial: Partial<TodoEntity>): TodoEntity {
@@ -30,6 +35,7 @@ function initTodo(partial: Partial<TodoEntity>): TodoEntity {
     id: partial.id || faker.string.uuid(),
     label: partial.label ?? faker.lorem.sentence(),
     userId: partial.userId || aliceUserId,
+    createdAt: partial.createdAt || new Date(),
   };
 }
 
