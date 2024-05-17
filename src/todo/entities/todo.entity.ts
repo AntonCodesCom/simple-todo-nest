@@ -14,22 +14,28 @@ export class TodoEntity implements TodoModel {
   id: string;
 
   @ApiProperty({
+    type: 'uuid',
+    example: aliceUserId,
+  })
+  userId: string;
+
+  @ApiProperty({
     example: 'Learn NestJS.',
   })
   label: string;
 
   @ApiProperty({
-    type: 'uuid',
-    example: aliceUserId,
+    type: 'boolean',
   })
-  userId: string;
+  done: boolean;
 }
 
 function initTodo(partial: Partial<TodoEntity>): TodoEntity {
   return {
     id: partial.id || faker.string.uuid(),
-    label: partial.label ?? faker.lorem.sentence(),
     userId: partial.userId || aliceUserId,
+    label: partial.label ?? faker.lorem.sentence(),
+    done: partial.done ?? faker.datatype.boolean(),
   };
 }
 
