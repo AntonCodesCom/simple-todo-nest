@@ -42,6 +42,7 @@ export class TodoService {
     id: string,
     updateTodoDto: UpdateTodoDto,
   ): Promise<TodoEntity | null> {
+    // TODO: figure out why TypeScript always marks return type as `Promise<TodoEntity>`
     try {
       return await this.prismaService.todo.update({
         where: { id, userId },
