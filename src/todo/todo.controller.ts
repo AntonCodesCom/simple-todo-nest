@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseInterceptors,
+  NotFoundException,
 } from '@nestjs/common';
 import { TodoService } from './todo.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
@@ -17,6 +18,7 @@ import {
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiTags,
   ApiUnauthorizedResponse,
@@ -60,15 +62,23 @@ export class TodoController {
     type: TodoEntity,
   })
   @ApiBadRequestResponse()
-  @ApiForbiddenResponse()
+  @ApiNotFoundResponse()
   @Patch(':id')
-  update(
+  async update(
     @UserId() userId: string,
     @Param('id') id: string,
     @Body() updateTodoDto: UpdateTodoDto,
   ): Promise<TodoEntity> {
     // TODO: id IsUUID check
-    return this.todoService.update(userId, id, updateTodoDto);
+    const updatedTodo = await this.todoService.update(
+      userId,
+      id,
+      updateTodoDto,
+    );
+    if (!updatedTodo) {
+      throw new NotFoundException();
+    }
+    return updatedTodo;
   }
 
   // @Delete(':id')

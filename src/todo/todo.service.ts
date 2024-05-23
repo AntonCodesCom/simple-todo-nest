@@ -5,6 +5,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import todos from './fixtures/todos';
 import { EnvService } from 'src/env/env.service';
 import { TodoEntity } from './entities/todo.entity';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class TodoService {
@@ -31,16 +32,30 @@ export class TodoService {
     });
   }
 
+  /**
+   *
+   * @returns `TodoEntity` when the todo is updated successfully
+   * @returns `null` if a todo with given `id` and `userId` not found
+   */
   async update(
     userId: string,
     id: string,
     updateTodoDto: UpdateTodoDto,
-  ): Promise<TodoEntity> {
-    // TODO: forbidden check
-    return await this.prismaService.todo.update({
-      where: { id, userId },
-      data: updateTodoDto,
-    });
+  ): Promise<TodoEntity | null> {
+    try {
+      return await this.prismaService.todo.update({
+        where: { id, userId },
+        data: updateTodoDto,
+      });
+    } catch (err) {
+      if (
+        err instanceof PrismaClientKnownRequestError &&
+        err.code === 'P2025'
+      ) {
+        return null;
+      }
+      throw err;
+    }
   }
 
   // remove(id: number) {
