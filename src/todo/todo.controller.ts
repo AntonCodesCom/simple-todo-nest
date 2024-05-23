@@ -80,8 +80,20 @@ export class TodoController {
     return updatedTodo;
   }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.todoService.remove(+id);
-  // }
+  @ApiOkResponse({
+    type: TodoEntity,
+  })
+  @ApiBadRequestResponse()
+  @ApiNotFoundResponse()
+  @Delete(':id')
+  async remove(
+    @UserId() userId: string,
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<TodoEntity> {
+    const deletedTodo = await this.todoService.remove(userId, id);
+    if (!deletedTodo) {
+      throw new NotFoundException();
+    }
+    return deletedTodo;
+  }
 }
