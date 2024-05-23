@@ -15,6 +15,7 @@ import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiCreatedResponse,
+  ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiOkResponse,
   ApiTags,
@@ -55,15 +56,20 @@ export class TodoController {
     return todos.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.todoService.findOne(+id);
-  // }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateTodoDto: UpdateTodoDto) {
-  //   return this.todoService.update(+id, updateTodoDto);
-  // }
+  @ApiOkResponse({
+    type: TodoEntity,
+  })
+  @ApiBadRequestResponse()
+  @ApiForbiddenResponse()
+  @Patch(':id')
+  update(
+    @UserId() userId: string,
+    @Param('id') id: string,
+    @Body() updateTodoDto: UpdateTodoDto,
+  ): Promise<TodoEntity> {
+    // TODO: id IsUUID check
+    return this.todoService.update(userId, id, updateTodoDto);
+  }
 
   // @Delete(':id')
   // remove(@Param('id') id: string) {

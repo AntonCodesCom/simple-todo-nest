@@ -31,13 +31,17 @@ export class TodoService {
     });
   }
 
-  // findOne(id: number) {
-  //   return `This action returns a #${id} todo`;
-  // }
-
-  // update(id: number, updateTodoDto: UpdateTodoDto) {
-  //   return `This action updates a #${id} todo`;
-  // }
+  async update(
+    userId: string,
+    id: string,
+    updateTodoDto: UpdateTodoDto,
+  ): Promise<TodoEntity> {
+    // TODO: forbidden check
+    return await this.prismaService.todo.update({
+      where: { id, userId },
+      data: updateTodoDto,
+    });
+  }
 
   // remove(id: number) {
   //   return `This action removes a #${id} todo`;
