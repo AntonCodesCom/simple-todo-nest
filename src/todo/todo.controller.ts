@@ -8,6 +8,7 @@ import {
   Delete,
   UseInterceptors,
   NotFoundException,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { TodoService } from './todo.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
@@ -66,10 +67,9 @@ export class TodoController {
   @Patch(':id')
   async update(
     @UserId() userId: string,
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updateTodoDto: UpdateTodoDto,
   ): Promise<TodoEntity> {
-    // TODO: id IsUUID check
     const updatedTodo = await this.todoService.update(
       userId,
       id,
