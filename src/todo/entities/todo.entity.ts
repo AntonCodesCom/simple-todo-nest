@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import { Todo as TodoModel } from '@prisma/client';
 import { aliceUserId } from '../fixtures/user-ids';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsNotEmpty, IsString } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
 /**
  * Todo entity.
@@ -25,6 +25,7 @@ export class TodoEntity implements TodoModel {
   })
   @IsString()
   @IsNotEmpty()
+  @MaxLength(1000)
   label: string;
 
   @ApiProperty({
