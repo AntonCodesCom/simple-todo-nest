@@ -17,7 +17,7 @@ describe('Todo REST', () => {
   const mockUserId = aliceUserId;
   const authorizationHeader = `Bearer ${mockUserId}`;
   const mockTodos = getRandomObjectArray(); // randomizing to prevent false positives
-  const mockFindAllFn = jest.fn().mockReturnValue(mockTodos);
+  const mockFindAllFn = jest.fn().mockResolvedValue(mockTodos);
   const mockTodoService = {
     findAll: mockFindAllFn,
   };
@@ -43,7 +43,7 @@ describe('Todo REST', () => {
         .set('Authorization', authorizationHeader)
         .expect(200);
       expect(mockTodoService.findAll).toHaveBeenCalledWith(mockUserId);
-      expect(response.body).toEqual(mockTodoService.findAll());
+      expect(response.body).toEqual(await mockTodoService.findAll());
     });
 
     test('invalid authorization', async () => {

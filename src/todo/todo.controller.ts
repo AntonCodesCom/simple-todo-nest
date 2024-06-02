@@ -54,7 +54,7 @@ export class TodoController {
     isArray: true,
   })
   @Get()
-  findAll(@UserId() userId: string) {
+  findAll(@UserId() userId: string): Promise<TodoEntity[]> {
     return this.todoService.findAll(userId);
   }
 
