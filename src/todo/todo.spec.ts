@@ -129,6 +129,11 @@ describe('Todo REST', () => {
       (invalidBody as any).invalidProperty = true;
       const validationErrors = await validate(invalidBody, validatorOptions);
       expect(validationErrors.length).toBeGreaterThan(0);
+      await request(app.getHttpServer())
+        .patch(`/todo/${mockTodoId}`)
+        .set('Authorization', authorizationHeader)
+        .send(invalidBody)
+        .expect(400);
     });
   });
 });
