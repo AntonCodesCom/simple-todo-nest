@@ -26,13 +26,11 @@ export class TodoService {
     });
   }
 
-  async findAllByUserId(userId: string): Promise<TodoEntity[]> {
+  async findAll(userId: string): Promise<TodoEntity[]> {
     return await this.prismaService.todo.findMany({
       where: { userId },
     });
   }
-
-  async findAll(userId: string) {}
 
   /**
    *

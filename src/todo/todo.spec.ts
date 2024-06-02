@@ -1,23 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import todosFixture from './fixtures/todos';
 import { TodoService } from './todo.service';
 import { TodoModule } from './todo.module';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { validate } from 'class-validator';
 import validatorOptions from 'src/common/validator-options';
 import { aliceUserId } from './fixtures/user-ids';
-import { faker } from '@faker-js/faker';
-
-// utility
-// TODO: replace deprecated `faker.datatype.json()`
-function getRandomObjectArray(): object[] {
-  return faker.helpers.multiple(
-    () => JSON.parse(faker.datatype.json()) as object,
-    { count: { min: 1, max: 10 } },
-  );
-}
+import getRandomObjectArray from 'src/common/utils/getRandomObjectArray';
 
 //
 // integration test
