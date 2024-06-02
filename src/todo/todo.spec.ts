@@ -8,6 +8,7 @@ import { validate } from 'class-validator';
 import validatorOptions from 'src/common/validator-options';
 import { aliceUserId } from './fixtures/user-ids';
 import getRandomObjectArray from 'src/common/utils/getRandomObjectArray';
+import { faker } from '@faker-js/faker';
 
 //
 // integration test
@@ -18,8 +19,14 @@ describe('Todo REST', () => {
   const authorizationHeader = `Bearer ${mockUserId}`;
   const mockTodos = getRandomObjectArray(); // randomizing to prevent false positives
   const mockFindAllFn = jest.fn().mockResolvedValue(mockTodos);
+  const getRandomString = faker.string.sample;
+  const mockCreatedTodo: object = {
+    [getRandomString()]: getRandomString(),
+  }; // object structure doesn't matter
+  const mockCreateFn = jest.fn().mockResolvedValue(mockCreatedTodo);
   const mockTodoService = {
     findAll: mockFindAllFn,
+    create: mockCreateFn,
   };
 
   // init SUT app
@@ -65,7 +72,7 @@ describe('Todo REST', () => {
         .send(validBody)
         .expect(201);
       // TODO: assert service method args
-      // TODO: assert return value
+      expect(response.body).toEqual(await mockTodoService.create());
     });
 
     test('invalid authorization', async () => {
