@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { TodoService } from './todo.service';
 import { TodoModule } from './todo.module';
@@ -32,6 +32,7 @@ describe('Todo REST', () => {
       .compile();
 
     app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(new ValidationPipe(validatorOptions));
     await app.init();
   });
 
@@ -51,6 +52,7 @@ describe('Todo REST', () => {
     });
   });
 
+  // POST /todo
   describe('POST /todo', () => {
     const validBody: CreateTodoDto = {
       label: 'Valid label.',
@@ -70,18 +72,20 @@ describe('Todo REST', () => {
       await request(app.getHttpServer()).post('/todo').expect(401);
     });
 
-    test.todo('invalid request body');
-
-    it.skip('should return 400 on invalid request body', async () => {
+    test('invalid request body', async () => {
       // Defining body that will always be invalid against the target `CreateTodoDto`
       // (just don't define `CreateTodoDto.invalidProperty` within the DTO itself).
       // This approach will, however, work only when unknown body properties are
       // supposed to be rejected by endpoints.
-      const createTodoDto = new CreateTodoDto();
-      (createTodoDto as any).invalidProperty = true;
-      const validationErrors = await validate(createTodoDto, validatorOptions);
+      const invalidBody = new CreateTodoDto();
+      (invalidBody as any).invalidProperty = true;
+      const validationErrors = await validate(invalidBody, validatorOptions);
       expect(validationErrors.length).toBeGreaterThan(0);
-      // TODO: test request
+      await request(app.getHttpServer())
+        .post('/todo')
+        .set('Authorization', authorizationHeader)
+        .send(invalidBody)
+        .expect(400);
     });
   });
 });
