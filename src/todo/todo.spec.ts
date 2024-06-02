@@ -114,7 +114,11 @@ describe('Todo REST', () => {
         .set('Authorization', authorizationHeader)
         .send(validBody)
         .expect(200);
-      // TODO: assert service method args
+      expect(mockTodoService.update).toHaveBeenCalledWith(
+        mockUserId,
+        mockTodoId,
+        validBody,
+      );
       expect(response.body).toEqual(await mockTodoService.update());
     });
 

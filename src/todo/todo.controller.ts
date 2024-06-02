@@ -80,7 +80,7 @@ export class TodoController {
     //   throw new NotFoundException();
     // }
     // return updatedTodo;
-    return await this.todoService.update('', '', {});
+    return await this.todoService.update(userId, id, updateTodoDto);
   }
 
   @ApiOkResponse({
