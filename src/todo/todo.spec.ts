@@ -51,8 +51,26 @@ describe('Todo REST', () => {
     });
   });
 
-  describe.skip('POST /todo', () => {
-    it('should return 400 on invalid request body', async () => {
+  describe('POST /todo', () => {
+    const validBody: CreateTodoDto = {
+      label: 'Valid label.',
+    };
+
+    test('valid request data', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/todo')
+        .set('Authorization', authorizationHeader)
+        .send(validBody)
+        .expect(201);
+      // TODO: assert service method args
+      // TODO: assert return value
+    });
+
+    test.todo('invalid authorization');
+
+    test.todo('invalid request body');
+
+    it.skip('should return 400 on invalid request body', async () => {
       // Defining body that will always be invalid against the target `CreateTodoDto`
       // (just don't define `CreateTodoDto.invalidProperty` within the DTO itself).
       // This approach will, however, work only when unknown body properties are

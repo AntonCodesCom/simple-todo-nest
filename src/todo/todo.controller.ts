@@ -27,7 +27,7 @@ import { AuthInterceptor } from 'src/auth/auth.interceptor';
 import UserId from 'src/auth/user-id.decorator';
 import { TodoEntity } from './entities/todo.entity';
 
-@UseInterceptors(AuthInterceptor)
+// @UseInterceptors(AuthInterceptor)
 @ApiBearerAuth()
 @ApiTags('todo')
 @ApiUnauthorizedResponse()
@@ -44,11 +44,11 @@ export class TodoController {
   create(
     @Body() createTodoDto: CreateTodoDto,
     @UserId() userId: string,
-  ): Promise<TodoEntity> {
-    return this.todoService.create(createTodoDto, userId);
+  ) /*: Promise<TodoEntity>*/ {
+    // return this.todoService.create(createTodoDto, userId);
   }
 
-  // @UseInterceptors(AuthInterceptor) // TODO: remove after completing writing tests
+  @UseInterceptors(AuthInterceptor) // TODO: remove after completing writing tests
   @ApiOkResponse({
     type: TodoEntity,
     isArray: true,
