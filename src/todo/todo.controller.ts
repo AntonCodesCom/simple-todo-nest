@@ -55,8 +55,7 @@ export class TodoController {
     isArray: true,
   })
   @Get()
-  findAllByUserId(@UserId() userId: string) {
-    // const todos = await this.todoService.findAllByUserId(userId);
+  findAll(@UserId() userId: string) {
     return this.todoService.findAll(userId);
   }
   // async findAllByUserId(@UserId() userId: string): Promise<TodoEntity[]> {

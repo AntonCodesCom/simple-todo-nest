@@ -29,6 +29,9 @@ export class TodoService {
   async findAll(userId: string): Promise<TodoEntity[]> {
     return await this.prismaService.todo.findMany({
       where: { userId },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
   }
 

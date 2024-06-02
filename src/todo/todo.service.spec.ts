@@ -26,6 +26,9 @@ describe('TodoService', () => {
       where: {
         userId: mockUserId,
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
     const expected = await mockPrismaService.todo.findMany();
     expect(actual).toEqual(expected);
