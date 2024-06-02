@@ -23,9 +23,11 @@ describe('Todo REST', () => {
   const mockFindAllFn = jest.fn().mockResolvedValue(mockTodos);
   const mockCreatedTodo: object = getRandomObject(); // structure doesn't matter
   const mockCreateFn = jest.fn().mockResolvedValue(mockCreatedTodo);
+  const mockUpdateFn = jest.fn();
   const mockTodoService = {
     findAll: mockFindAllFn,
     create: mockCreateFn,
+    update: mockUpdateFn,
   };
 
   // init SUT app
@@ -105,13 +107,15 @@ describe('Todo REST', () => {
     };
 
     test('happy path', async () => {
+      const mockUpdatedDto = getRandomObject(); // structure doesn't matter
+      mockTodoService.update.mockResolvedValue(mockUpdatedDto);
       const response = await request(app.getHttpServer())
         .patch(`/todo/${mockTodoId}`)
         .set('Authorization', authorizationHeader)
         .send(validBody)
         .expect(200);
       // TODO: assert service method args
-      // TODO: assert response body
+      expect(response.body).toEqual(await mockTodoService.update());
     });
 
     test.todo('Todo not found');
