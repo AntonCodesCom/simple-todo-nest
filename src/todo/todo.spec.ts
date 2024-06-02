@@ -35,8 +35,7 @@ describe('Todo REST', () => {
     })
       .overrideProvider(TodoService)
       .useValue(mockTodoService)
-      .compile();
-
+      .compile(); // TODO: override interceptor (AuthInterceptor)
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(new ValidationPipe(validatorOptions));
     await app.init();
@@ -125,6 +124,11 @@ describe('Todo REST', () => {
 
     test.todo('invalid `id` parameter');
 
-    test.todo('invalid request body');
+    test('invalid request body', async () => {
+      const invalidBody = new UpdateTodoDto();
+      (invalidBody as any).invalidProperty = true;
+      const validationErrors = await validate(invalidBody, validatorOptions);
+      expect(validationErrors.length).toBeGreaterThan(0);
+    });
   });
 });
