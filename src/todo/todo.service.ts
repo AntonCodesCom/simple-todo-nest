@@ -53,12 +53,12 @@ export class TodoService {
       });
     } catch (err) {
       if (
-        // err instanceof PrismaClientKnownRequestError &&
+        err instanceof PrismaClientKnownRequestError &&
         err.code === 'P2025'
       ) {
         return null;
       }
-      // throw err;
+      throw err;
     }
   }
 

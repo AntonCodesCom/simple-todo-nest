@@ -92,6 +92,21 @@ describe('TodoService', () => {
       expect(actual).toBeNull();
     });
 
-    test.todo('unknown error');
+    test('unknown error', async () => {
+      class TestError extends Error {
+        constructor(
+          public message: string,
+          public code: string,
+        ) {
+          super(message);
+        }
+      }
+      const code = 'P2025'; // same code as for "Todo not found" to prevent false positives
+      const mockError = new TestError('', code);
+      mockPrismaService.todo.update.mockRejectedValue(mockError);
+      await expect(
+        todoService.update(mockUserId, mockTodoId, validDto),
+      ).rejects.toBe(mockError);
+    });
   });
 });
