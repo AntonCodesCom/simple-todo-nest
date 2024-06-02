@@ -9,6 +9,7 @@ import validatorOptions from 'src/common/validator-options';
 import { aliceUserId } from './fixtures/user-ids';
 import getRandomObjectArray from 'src/common/utils/getRandomObjectArray';
 import { faker } from '@faker-js/faker';
+import getRandomObject from 'src/common/utils/getRandomObject';
 
 //
 // integration test
@@ -19,10 +20,7 @@ describe('Todo REST', () => {
   const authorizationHeader = `Bearer ${mockUserId}`;
   const mockTodos = getRandomObjectArray(); // randomizing to prevent false positives
   const mockFindAllFn = jest.fn().mockResolvedValue(mockTodos);
-  const getRandomString = faker.string.sample;
-  const mockCreatedTodo: object = {
-    [getRandomString()]: getRandomString(),
-  }; // object structure doesn't matter
+  const mockCreatedTodo: object = getRandomObject(); // structure doesn't matter
   const mockCreateFn = jest.fn().mockResolvedValue(mockCreatedTodo);
   const mockTodoService = {
     findAll: mockFindAllFn,
