@@ -48,14 +48,14 @@ export class TodoController {
     return this.todoService.create(createTodoDto, userId);
   }
 
+  // @UseInterceptors(AuthInterceptor) // TODO: remove after completing writing tests
   @ApiOkResponse({
     type: TodoEntity,
     isArray: true,
   })
   @Get()
-  async findAllByUserId(@UserId() userId: string): Promise<TodoEntity[]> {
-    const todos = await this.todoService.findAllByUserId(userId);
-    return todos.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+  findAll(@UserId() userId: string): Promise<TodoEntity[]> {
+    return this.todoService.findAll(userId);
   }
 
   @ApiOkResponse({
