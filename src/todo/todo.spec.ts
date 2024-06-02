@@ -7,6 +7,7 @@ import { TodoModule } from './todo.module';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { validate } from 'class-validator';
 import validatorOptions from 'src/common/validator-options';
+import { aliceUserId } from './fixtures/user-ids';
 
 // test data
 const mockTodos = todosFixture;
@@ -20,7 +21,9 @@ const mockTodoService = {
 //
 describe('Todo REST', () => {
   let app: INestApplication;
+  const authorizationHeader = `Bearer ${aliceUserId}`;
 
+  // before each
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [TodoModule],
@@ -31,6 +34,26 @@ describe('Todo REST', () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
+  });
+
+  // GET /todo
+  describe('GET /todo', () => {
+    describe('on valid data', () => {
+      it('should respond with 200', async () => {
+        await request(app.getHttpServer())
+          .get('/todo')
+          .set('Authorization', authorizationHeader)
+          .expect(200);
+      });
+
+      it.todo(
+        'should return `TodoService.findAll()` return value as response body',
+      );
+    });
+
+    describe('on invalid authorization', () => {
+      it.todo('should respond with 401');
+    });
   });
 
   test.skip('GET /todo', async () => {

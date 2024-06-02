@@ -54,9 +54,13 @@ export class TodoController {
   })
   @Get()
   async findAllByUserId(@UserId() userId: string): Promise<TodoEntity[]> {
-    const todos = await this.todoService.findAllByUserId(userId);
-    return todos.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+    // const todos = await this.todoService.findAllByUserId(userId);
+    return [];
   }
+  // async findAllByUserId(@UserId() userId: string): Promise<TodoEntity[]> {
+  //   const todos = await this.todoService.findAllByUserId(userId);
+  //   return todos.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+  // }
 
   @ApiOkResponse({
     type: TodoEntity,
