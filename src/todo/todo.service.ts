@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import todos from './fixtures/todos';
+import todosFixture from './fixtures/todos';
 import { EnvService } from 'src/env/env.service';
 import { TodoEntity } from './entities/todo.entity';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
@@ -31,6 +31,8 @@ export class TodoService {
       where: { userId },
     });
   }
+
+  async findAll() {}
 
   /**
    *
@@ -92,7 +94,7 @@ export class TodoService {
       throw new Error('Data seeding is not allowed in production mode.');
     }
     await this.prismaService.todo.createMany({
-      data: todos,
+      data: todosFixture,
     });
   }
 }

@@ -1,7 +1,7 @@
 import { TodoEntity, initTodos } from '../entities/todo.entity';
 import { aliceUserId, bobUserId } from './user-ids';
 
-const todos: TodoEntity[] = initTodos([
+const todosFixture: TodoEntity[] = initTodos([
   {
     id: 'ef1e68db-6e1d-42f0-8e31-574694236062',
     userId: aliceUserId,
@@ -31,4 +31,4 @@ const todos: TodoEntity[] = initTodos([
   },
 ]);
 
-export default todos;
+export default todosFixture;

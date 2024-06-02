@@ -8,22 +8,35 @@ import { CreateTodoDto } from './dto/create-todo.dto';
 import { validate } from 'class-validator';
 import validatorOptions from 'src/common/validator-options';
 import { aliceUserId } from './fixtures/user-ids';
+import { faker } from '@faker-js/faker';
 
 // test data
 const mockTodos = todosFixture;
 const mockFindAllByUserIdFn = jest.fn().mockReturnValue(mockTodos); // TODO: random return value
-const mockTodoService = {
-  findAllByUserId: mockFindAllByUserIdFn,
-};
+
+// utility
+// TODO: replace deprecated `faker.datatype.json()`
+function getRandomObjectArray(): object[] {
+  return faker.helpers.multiple(
+    () => JSON.parse(faker.datatype.json()) as object,
+    { count: { min: 1, max: 10 } },
+  );
+}
 
 //
 // integration test
 //
 describe('Todo REST', () => {
   let app: INestApplication;
-  const authorizationHeader = `Bearer ${aliceUserId}`;
+  const mockUserId = aliceUserId;
+  const authorizationHeader = `Bearer ${mockUserId}`;
+  const mockTodos = getRandomObjectArray(); // randomizing to prevent false positives
+  const mockFindAllFn = jest.fn().mockReturnValue(mockTodos);
+  const mockTodoService = {
+    findAll: mockFindAllFn,
+  };
 
-  // before each
+  // init SUT app
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [TodoModule],
@@ -46,9 +59,14 @@ describe('Todo REST', () => {
           .expect(200);
       });
 
-      it.todo(
-        'should return `TodoService.findAll()` return value as response body',
-      );
+      it('should return `TodoService.findAll()` value as body', async () => {
+        const response = await request(app.getHttpServer())
+          .get('/todo')
+          .set('Authorization', authorizationHeader);
+        expect(response.body).toEqual(mockTodoService.findAll());
+      });
+
+      it.todo('should call `TodoService.findAll()` with given user ID');
     });
 
     describe('on invalid authorization', () => {
@@ -61,7 +79,7 @@ describe('Todo REST', () => {
       .get('/todo')
       .expect(200);
     expect(mockFindAllByUserIdFn).toHaveBeenCalled();
-    expect(response.body).toEqual(mockTodoService.findAllByUserId());
+    expect(response.body).toEqual(mockTodoService.findAll());
   });
 
   describe('POST /todo', () => {

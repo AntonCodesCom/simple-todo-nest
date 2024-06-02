@@ -26,8 +26,9 @@ import {
 import { AuthInterceptor } from 'src/auth/auth.interceptor';
 import UserId from 'src/auth/user-id.decorator';
 import { TodoEntity } from './entities/todo.entity';
+import todosFixture from './fixtures/todos';
 
-@UseInterceptors(AuthInterceptor)
+// @UseInterceptors(AuthInterceptor)
 @ApiBearerAuth()
 @ApiTags('todo')
 @ApiUnauthorizedResponse()
@@ -53,9 +54,9 @@ export class TodoController {
     isArray: true,
   })
   @Get()
-  async findAllByUserId(@UserId() userId: string): Promise<TodoEntity[]> {
+  findAllByUserId(@UserId() userId: string) {
     // const todos = await this.todoService.findAllByUserId(userId);
-    return [];
+    return this.todoService.findAll();
   }
   // async findAllByUserId(@UserId() userId: string): Promise<TodoEntity[]> {
   //   const todos = await this.todoService.findAllByUserId(userId);
