@@ -26,7 +26,7 @@ export class TodoService {
   //   });
   // }
 
-  async create() {}
+  async create(createTodoDto: CreateTodoDto, userId: string) {}
 
   async findAll(userId: string): Promise<TodoEntity[]> {
     return await this.prismaService.todo.findMany({

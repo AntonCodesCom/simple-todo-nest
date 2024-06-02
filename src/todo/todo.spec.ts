@@ -71,7 +71,10 @@ describe('Todo REST', () => {
         .set('Authorization', authorizationHeader)
         .send(validBody)
         .expect(201);
-      // TODO: assert service method args
+      expect(mockTodoService.create).toHaveBeenCalledWith(
+        validBody,
+        mockUserId,
+      );
       expect(response.body).toEqual(await mockTodoService.create());
     });
 

@@ -46,8 +46,7 @@ export class TodoController {
     @Body() createTodoDto: CreateTodoDto,
     @UserId() userId: string,
   ) /*: Promise<TodoEntity>*/ {
-    return this.todoService.create();
-    // return this.todoService.create(createTodoDto, userId);
+    return this.todoService.create(createTodoDto, userId);
   }
 
   @UseInterceptors(AuthInterceptor) // TODO: remove after completing writing tests
