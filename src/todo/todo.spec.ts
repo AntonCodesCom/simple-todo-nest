@@ -117,7 +117,11 @@ describe('Todo REST', () => {
 
     test.todo('Todo not found');
 
-    test.todo('invalid authorization');
+    test('invalid authorization', async () => {
+      await request(app.getHttpServer())
+        .patch(`/todo/${mockTodoId}`)
+        .expect(401);
+    });
 
     test.todo('invalid `id` parameter');
 
