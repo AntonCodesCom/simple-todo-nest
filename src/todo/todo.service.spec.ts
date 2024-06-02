@@ -46,7 +46,12 @@ describe('TodoService', () => {
       label: faker.lorem.sentence(),
     };
     const actual = await todoService.create(validDto, mockUserId);
-    // TODO: assert prisma method args
+    expect(mockPrismaService.todo.create).toHaveBeenCalledWith({
+      data: {
+        ...validDto,
+        userId: mockUserId,
+      },
+    });
     expect(actual).toEqual(await mockPrismaService.todo.create());
   });
 });
