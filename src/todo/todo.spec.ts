@@ -51,26 +51,17 @@ describe('Todo REST', () => {
 
   // GET /todo
   describe('GET /todo', () => {
-    describe('on valid data', () => {
-      it('should respond with 200', async () => {
-        await request(app.getHttpServer())
-          .get('/todo')
-          .set('Authorization', authorizationHeader)
-          .expect(200);
-      });
-
-      it('should return `TodoService.findAll()` value as body', async () => {
-        const response = await request(app.getHttpServer())
-          .get('/todo')
-          .set('Authorization', authorizationHeader);
-        expect(response.body).toEqual(mockTodoService.findAll());
-      });
-
-      it.todo('should call `TodoService.findAll()` with given user ID');
+    test('valid request data', async () => {
+      const response = await request(app.getHttpServer())
+        .get('/todo')
+        .set('Authorization', authorizationHeader)
+        .expect(200);
+      expect(mockTodoService.findAll).toHaveBeenCalledWith(mockUserId);
+      expect(response.body).toEqual(mockTodoService.findAll());
     });
 
-    describe('on invalid authorization', () => {
-      it.todo('should respond with 401');
+    test('invalid authorization', async () => {
+      await request(app.getHttpServer()).get('/todo').expect(401);
     });
   });
 

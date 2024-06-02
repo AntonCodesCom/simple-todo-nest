@@ -49,6 +49,7 @@ export class TodoController {
     return this.todoService.create(createTodoDto, userId);
   }
 
+  @UseInterceptors(AuthInterceptor) // TODO: move to the controller level
   @ApiOkResponse({
     type: TodoEntity,
     isArray: true,
@@ -56,7 +57,7 @@ export class TodoController {
   @Get()
   findAllByUserId(@UserId() userId: string) {
     // const todos = await this.todoService.findAllByUserId(userId);
-    return this.todoService.findAll();
+    return this.todoService.findAll(userId);
   }
   // async findAllByUserId(@UserId() userId: string): Promise<TodoEntity[]> {
   //   const todos = await this.todoService.findAllByUserId(userId);
