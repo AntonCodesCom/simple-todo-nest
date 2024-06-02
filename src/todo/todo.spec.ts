@@ -10,6 +10,7 @@ import { aliceUserId } from './fixtures/user-ids';
 import getRandomObjectArray from 'src/common/utils/getRandomObjectArray';
 import { faker } from '@faker-js/faker';
 import getRandomObject from 'src/common/utils/getRandomObject';
+import { UpdateTodoDto } from './dto/update-todo.dto';
 
 //
 // integration test
@@ -22,9 +23,11 @@ describe('Todo REST', () => {
   const mockFindAllFn = jest.fn().mockResolvedValue(mockTodos);
   const mockCreatedTodo: object = getRandomObject(); // structure doesn't matter
   const mockCreateFn = jest.fn().mockResolvedValue(mockCreatedTodo);
+  const mockUpdateFn = jest.fn();
   const mockTodoService = {
     findAll: mockFindAllFn,
     create: mockCreateFn,
+    update: mockUpdateFn,
   };
 
   // init SUT app
@@ -34,8 +37,7 @@ describe('Todo REST', () => {
     })
       .overrideProvider(TodoService)
       .useValue(mockTodoService)
-      .compile();
-
+      .compile(); // TODO: override interceptor (AuthInterceptor)
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(new ValidationPipe(validatorOptions));
     await app.init();
@@ -59,11 +61,10 @@ describe('Todo REST', () => {
 
   // POST /todo
   describe('POST /todo', () => {
-    const validBody: CreateTodoDto = {
-      label: 'Valid label.',
-    };
-
     test('valid request data', async () => {
+      const validBody: CreateTodoDto = {
+        label: 'Valid label.', // can be randomized
+      };
       const response = await request(app.getHttpServer())
         .post('/todo')
         .set('Authorization', authorizationHeader)
@@ -91,6 +92,68 @@ describe('Todo REST', () => {
       expect(validationErrors.length).toBeGreaterThan(0);
       await request(app.getHttpServer())
         .post('/todo')
+        .set('Authorization', authorizationHeader)
+        .send(invalidBody)
+        .expect(400);
+    });
+  });
+
+  // PATCH /todo/:id
+  describe('PATCH /todo/:id', () => {
+    const mockTodoId = faker.string.uuid();
+    const validBody: UpdateTodoDto = {
+      done: faker.datatype.boolean(),
+      label: faker.lorem.sentence(),
+    };
+
+    test('happy path', async () => {
+      const mockUpdatedTodo = getRandomObject(); // structure doesn't matter
+      mockTodoService.update.mockResolvedValue(mockUpdatedTodo);
+      const response = await request(app.getHttpServer())
+        .patch(`/todo/${mockTodoId}`)
+        .set('Authorization', authorizationHeader)
+        .send(validBody)
+        .expect(200);
+      expect(mockTodoService.update).toHaveBeenCalledWith(
+        mockUserId,
+        mockTodoId,
+        validBody,
+      );
+      expect(response.body).toEqual(await mockTodoService.update());
+    });
+
+    test('Todo not found', async () => {
+      mockTodoService.update.mockResolvedValue(null);
+      await request(app.getHttpServer())
+        .patch(`/todo/${mockTodoId}`)
+        .set('Authorization', authorizationHeader)
+        .send(validBody)
+        .expect(404);
+      // TODO: figure out whether it is necessary to assert service method args
+    });
+
+    test('invalid authorization', async () => {
+      await request(app.getHttpServer())
+        .patch(`/todo/${mockTodoId}`)
+        .expect(401);
+    });
+
+    test('invalid `id` parameter (non-UUID)', async () => {
+      const invalidTodoId = 'non-uuid';
+      await request(app.getHttpServer())
+        .patch(`/todo/${invalidTodoId}`)
+        .set('Authorization', authorizationHeader)
+        .send(validBody)
+        .expect(400);
+    });
+
+    test('invalid request body', async () => {
+      const invalidBody = new UpdateTodoDto();
+      (invalidBody as any).invalidProperty = true;
+      const validationErrors = await validate(invalidBody, validatorOptions);
+      expect(validationErrors.length).toBeGreaterThan(0);
+      await request(app.getHttpServer())
+        .patch(`/todo/${mockTodoId}`)
         .set('Authorization', authorizationHeader)
         .send(invalidBody)
         .expect(400);

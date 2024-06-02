@@ -3,6 +3,8 @@ import { TodoService } from './todo.service';
 import { faker } from '@faker-js/faker';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import getRandomObject from 'src/common/utils/getRandomObject';
+import { UpdateTodoDto } from './dto/update-todo.dto';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 //
 // unit test
@@ -12,10 +14,12 @@ describe('TodoService', () => {
   const mockFindManyFn = jest.fn().mockResolvedValue(mockTodos);
   const mockCreatedTodo: object = getRandomObject(); // structure doesn't matter
   const mockCreateFn = jest.fn().mockResolvedValue(mockCreatedTodo);
+  const mockUpdateFn = jest.fn();
   const mockPrismaService = {
     todo: {
       findMany: mockFindManyFn,
       create: mockCreateFn,
+      update: mockUpdateFn,
     },
   };
   const todoService = new TodoService(
@@ -53,5 +57,56 @@ describe('TodoService', () => {
       },
     });
     expect(actual).toEqual(await mockPrismaService.todo.create());
+  });
+
+  // update()
+  describe('update()', () => {
+    const mockUserId = faker.string.sample();
+    const mockTodoId = faker.string.sample(); // format doesn't matter
+    const validDto: UpdateTodoDto = {
+      done: faker.datatype.boolean(),
+      label: faker.lorem.sentence(),
+    };
+
+    test('happy path', async () => {
+      const mockUpdatedTodo = getRandomObject();
+      mockPrismaService.todo.update.mockResolvedValue(mockUpdatedTodo);
+      const actual = await todoService.update(mockUserId, mockTodoId, validDto);
+      expect(mockPrismaService.todo.update).toHaveBeenCalledWith({
+        where: {
+          id: mockTodoId,
+          userId: mockUserId,
+        },
+        data: validDto,
+      });
+      expect(actual).toEqual(await mockPrismaService.todo.update());
+    });
+
+    test('Todo not found', async () => {
+      const mockError = new PrismaClientKnownRequestError('', {
+        code: 'P2025',
+        clientVersion: '',
+      });
+      mockPrismaService.todo.update.mockRejectedValue(mockError);
+      const actual = await todoService.update(mockUserId, mockTodoId, validDto);
+      expect(actual).toBeNull();
+    });
+
+    test('unknown prisma error', async () => {
+      class TestError extends Error {
+        constructor(
+          public message: string,
+          public code: string,
+        ) {
+          super(message);
+        }
+      }
+      const code = 'P2025'; // same code as for "Todo not found" to prevent false positives
+      const mockError = new TestError('', code);
+      mockPrismaService.todo.update.mockRejectedValue(mockError);
+      await expect(
+        todoService.update(mockUserId, mockTodoId, validDto),
+      ).rejects.toBe(mockError);
+    });
   });
 });

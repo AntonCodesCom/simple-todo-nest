@@ -38,6 +38,7 @@ export class TodoEntity implements TodoModel {
   @ApiProperty({
     type: 'boolean',
   })
+  // @Allow() // TODO: remove this after re-enabling other validation decorators
   @IsBoolean()
   done: boolean;
 

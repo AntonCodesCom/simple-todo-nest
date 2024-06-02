@@ -59,6 +59,7 @@ export class TodoController {
     return this.todoService.findAll(userId);
   }
 
+  // @UseInterceptors(AuthInterceptor) // TODO: remove after completing writing tests
   @ApiOkResponse({
     type: TodoEntity,
   })
