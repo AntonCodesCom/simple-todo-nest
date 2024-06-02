@@ -70,7 +70,7 @@ export class TodoController {
     @UserId() userId: string,
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateTodoDto: UpdateTodoDto,
-  ) /*: Promise<TodoEntity>*/ {
+  ): Promise<TodoEntity> {
     const updatedTodo = await this.todoService.update(
       userId,
       id,

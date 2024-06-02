@@ -4,6 +4,7 @@ import { faker } from '@faker-js/faker';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import getRandomObject from 'src/common/utils/getRandomObject';
 import { UpdateTodoDto } from './dto/update-todo.dto';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 //
 // unit test
@@ -60,13 +61,14 @@ describe('TodoService', () => {
 
   // update()
   describe('update()', () => {
+    const mockUserId = faker.string.sample();
+    const mockTodoId = faker.string.sample(); // format doesn't matter
+    const validDto: UpdateTodoDto = {
+      done: faker.datatype.boolean(),
+      label: faker.lorem.sentence(),
+    };
+
     test('happy path', async () => {
-      const mockUserId = faker.string.sample();
-      const mockTodoId = faker.string.sample(); // format doesn't matter
-      const validDto: UpdateTodoDto = {
-        done: faker.datatype.boolean(),
-        label: faker.lorem.sentence(),
-      };
       const mockUpdatedTodo = getRandomObject();
       mockPrismaService.todo.update.mockResolvedValue(mockUpdatedTodo);
       const actual = await todoService.update(mockUserId, mockTodoId, validDto);
@@ -80,7 +82,15 @@ describe('TodoService', () => {
       expect(actual).toEqual(await mockPrismaService.todo.update());
     });
 
-    test.todo('Todo not found');
+    test('Todo not found', async () => {
+      const mockError = new PrismaClientKnownRequestError('', {
+        code: 'P2025',
+        clientVersion: '',
+      });
+      mockPrismaService.todo.update.mockRejectedValue(mockError);
+      const actual = await todoService.update(mockUserId, mockTodoId, validDto);
+      expect(actual).toBeNull();
+    });
 
     test.todo('unknown error');
   });
