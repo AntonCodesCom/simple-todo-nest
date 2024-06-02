@@ -70,17 +70,16 @@ export class TodoController {
     @UserId() userId: string,
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateTodoDto: UpdateTodoDto,
-  ) /*: Promise<TodoEntity>*/ {
-    // const updatedTodo = await this.todoService.update(
-    //   userId,
-    //   id,
-    //   updateTodoDto,
-    // );
-    // if (!updatedTodo) {
-    //   throw new NotFoundException();
-    // }
-    // return updatedTodo;
-    return await this.todoService.update(userId, id, updateTodoDto);
+  ): Promise<TodoEntity> {
+    const updatedTodo = await this.todoService.update(
+      userId,
+      id,
+      updateTodoDto,
+    );
+    if (!updatedTodo) {
+      throw new NotFoundException();
+    }
+    return updatedTodo;
   }
 
   @ApiOkResponse({

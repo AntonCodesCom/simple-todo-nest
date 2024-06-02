@@ -122,7 +122,15 @@ describe('Todo REST', () => {
       expect(response.body).toEqual(await mockTodoService.update());
     });
 
-    test.todo('Todo not found');
+    test('Todo not found', async () => {
+      mockTodoService.update.mockResolvedValue(null);
+      await request(app.getHttpServer())
+        .patch(`/todo/${mockTodoId}`)
+        .set('Authorization', authorizationHeader)
+        .send(validBody)
+        .expect(404);
+      // TODO: figure out whether it is necessary to assert service method args
+    });
 
     test('invalid authorization', async () => {
       await request(app.getHttpServer())
