@@ -27,7 +27,7 @@ import { AuthInterceptor } from 'src/auth/auth.interceptor';
 import UserId from 'src/auth/user-id.decorator';
 import { TodoEntity } from './entities/todo.entity';
 
-@UseInterceptors(AuthInterceptor)
+// @UseInterceptors(AuthInterceptor)
 @ApiBearerAuth()
 @ApiTags('todo')
 @ApiUnauthorizedResponse()
@@ -36,7 +36,7 @@ import { TodoEntity } from './entities/todo.entity';
 export class TodoController {
   constructor(private readonly todoService: TodoService) {}
 
-  // @UseInterceptors(AuthInterceptor) // TODO: remove after completing writing tests
+  @UseInterceptors(AuthInterceptor) // TODO: remove after completing writing tests
   @ApiCreatedResponse({
     type: TodoEntity,
   })
@@ -49,7 +49,7 @@ export class TodoController {
     return this.todoService.create(createTodoDto, userId);
   }
 
-  // @UseInterceptors(AuthInterceptor) // TODO: remove after completing writing tests
+  @UseInterceptors(AuthInterceptor) // TODO: remove after completing writing tests
   @ApiOkResponse({
     type: TodoEntity,
     isArray: true,
@@ -67,18 +67,18 @@ export class TodoController {
   @Patch(':id')
   async update(
     @UserId() userId: string,
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateTodoDto: UpdateTodoDto,
-  ): Promise<TodoEntity> {
-    const updatedTodo = await this.todoService.update(
-      userId,
-      id,
-      updateTodoDto,
-    );
-    if (!updatedTodo) {
-      throw new NotFoundException();
-    }
-    return updatedTodo;
+    // @Param('id', ParseUUIDPipe) id: string,
+    // @Body() updateTodoDto: UpdateTodoDto,
+  ) /*: Promise<TodoEntity>*/ {
+    // const updatedTodo = await this.todoService.update(
+    //   userId,
+    //   id,
+    //   updateTodoDto,
+    // );
+    // if (!updatedTodo) {
+    //   throw new NotFoundException();
+    // }
+    // return updatedTodo;
   }
 
   @ApiOkResponse({

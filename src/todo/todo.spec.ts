@@ -10,6 +10,7 @@ import { aliceUserId } from './fixtures/user-ids';
 import getRandomObjectArray from 'src/common/utils/getRandomObjectArray';
 import { faker } from '@faker-js/faker';
 import getRandomObject from 'src/common/utils/getRandomObject';
+import { UpdateTodoDto } from './dto/update-todo.dto';
 
 //
 // integration test
@@ -59,11 +60,10 @@ describe('Todo REST', () => {
 
   // POST /todo
   describe('POST /todo', () => {
-    const validBody: CreateTodoDto = {
-      label: 'Valid label.',
-    };
-
     test('valid request data', async () => {
+      const validBody: CreateTodoDto = {
+        label: 'Valid label.', // can be randomized
+      };
       const response = await request(app.getHttpServer())
         .post('/todo')
         .set('Authorization', authorizationHeader)
@@ -95,5 +95,32 @@ describe('Todo REST', () => {
         .send(invalidBody)
         .expect(400);
     });
+  });
+
+  // PATCH /todo/:id
+  describe('PATCH /todo/:id', () => {
+    const mockTodoId = faker.string.sample();
+    const validBody: UpdateTodoDto = {
+      done: faker.datatype.boolean(),
+      label: faker.lorem.sentence(),
+    };
+
+    test('happy path', async () => {
+      const response = await request(app.getHttpServer())
+        .patch(`/todo/${mockTodoId}`)
+        .set('Authorization', authorizationHeader)
+        .send(validBody)
+        .expect(200);
+      // TODO: assert service method args
+      // TODO: assert response body
+    });
+
+    test.todo('Todo not found');
+
+    test.todo('invalid authorization');
+
+    test.todo('invalid `id` parameter');
+
+    test.todo('invalid request body');
   });
 });
