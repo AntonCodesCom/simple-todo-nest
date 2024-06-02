@@ -29,17 +29,17 @@ export class TodoEntity implements TodoModel {
   @ApiProperty({
     example: 'Learn NestJS.',
   })
-  @Allow() // TODO: remove this after re-enabling other validation decorators
-  // @IsString()
-  // @IsNotEmpty()
-  // @MaxLength(1000)
+  // @Allow() // TODO: remove this after re-enabling other validation decorators
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(1000)
   label: string;
 
   @ApiProperty({
     type: 'boolean',
   })
-  @Allow() // TODO: remove this after re-enabling other validation decorators
-  // @IsBoolean()
+  // @Allow() // TODO: remove this after re-enabling other validation decorators
+  @IsBoolean()
   done: boolean;
 
   @ApiProperty({

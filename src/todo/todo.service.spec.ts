@@ -92,7 +92,7 @@ describe('TodoService', () => {
       expect(actual).toBeNull();
     });
 
-    test('unknown error', async () => {
+    test('unknown prisma error', async () => {
       class TestError extends Error {
         constructor(
           public message: string,
