@@ -45,7 +45,7 @@ export class TodoController {
   create(
     @Body() createTodoDto: CreateTodoDto,
     @UserId() userId: string,
-  ) /*: Promise<TodoEntity>*/ {
+  ): Promise<TodoEntity> {
     return this.todoService.create(createTodoDto, userId);
   }
 
