@@ -26,9 +26,8 @@ import {
 import { AuthInterceptor } from 'src/auth/auth.interceptor';
 import UserId from 'src/auth/user-id.decorator';
 import { TodoEntity } from './entities/todo.entity';
-import todosFixture from './fixtures/todos';
 
-// @UseInterceptors(AuthInterceptor)
+@UseInterceptors(AuthInterceptor)
 @ApiBearerAuth()
 @ApiTags('todo')
 @ApiUnauthorizedResponse()
@@ -49,7 +48,7 @@ export class TodoController {
     return this.todoService.create(createTodoDto, userId);
   }
 
-  @UseInterceptors(AuthInterceptor) // TODO: move to the controller level
+  // @UseInterceptors(AuthInterceptor) // TODO: remove after completing writing tests
   @ApiOkResponse({
     type: TodoEntity,
     isArray: true,
@@ -58,10 +57,6 @@ export class TodoController {
   findAll(@UserId() userId: string) {
     return this.todoService.findAll(userId);
   }
-  // async findAllByUserId(@UserId() userId: string): Promise<TodoEntity[]> {
-  //   const todos = await this.todoService.findAllByUserId(userId);
-  //   return todos.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
-  // }
 
   @ApiOkResponse({
     type: TodoEntity,
