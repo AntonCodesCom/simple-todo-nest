@@ -66,7 +66,9 @@ describe('Todo REST', () => {
       // TODO: assert return value
     });
 
-    test.todo('invalid authorization');
+    test('invalid authorization', async () => {
+      await request(app.getHttpServer()).post('/todo').expect(401);
+    });
 
     test.todo('invalid request body');
 

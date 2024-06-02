@@ -36,6 +36,7 @@ import { TodoEntity } from './entities/todo.entity';
 export class TodoController {
   constructor(private readonly todoService: TodoService) {}
 
+  @UseInterceptors(AuthInterceptor) // TODO: remove after completing writing tests
   @ApiCreatedResponse({
     type: TodoEntity,
   })
