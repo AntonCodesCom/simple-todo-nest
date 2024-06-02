@@ -44,22 +44,27 @@ export class TodoService {
     userId: string,
     id: string,
     updateTodoDto: UpdateTodoDto,
-  ): Promise<TodoEntity | null> {
-    // TODO: figure out why TypeScript always marks return type as `Promise<TodoEntity>`
-    try {
-      return await this.prismaService.todo.update({
-        where: { id, userId },
-        data: updateTodoDto,
-      });
-    } catch (err) {
-      if (
-        err instanceof PrismaClientKnownRequestError &&
-        err.code === 'P2025'
-      ) {
-        return null;
-      }
-      throw err;
-    }
+  ) /*: Promise<TodoEntity | null>*/ {
+    // // TODO: figure out why TypeScript always marks return type as `Promise<TodoEntity>`
+    // try {
+    //   return await this.prismaService.todo.update({
+    //     where: { id, userId },
+    //     data: updateTodoDto,
+    //   });
+    // } catch (err) {
+    //   if (
+    //     err instanceof PrismaClientKnownRequestError &&
+    //     err.code === 'P2025'
+    //   ) {
+    //     return null;
+    //   }
+    //   throw err;
+    // }
+    return await this.prismaService.todo.update({
+      where: { id: '', userId: '' },
+      // data: updateTodoDto,
+      data: {},
+    });
   }
 
   /**

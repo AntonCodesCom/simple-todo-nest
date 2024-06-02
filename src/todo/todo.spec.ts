@@ -107,8 +107,8 @@ describe('Todo REST', () => {
     };
 
     test('happy path', async () => {
-      const mockUpdatedDto = getRandomObject(); // structure doesn't matter
-      mockTodoService.update.mockResolvedValue(mockUpdatedDto);
+      const mockUpdatedTodo = getRandomObject(); // structure doesn't matter
+      mockTodoService.update.mockResolvedValue(mockUpdatedTodo);
       const response = await request(app.getHttpServer())
         .patch(`/todo/${mockTodoId}`)
         .set('Authorization', authorizationHeader)

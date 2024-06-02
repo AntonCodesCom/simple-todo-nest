@@ -3,6 +3,7 @@ import { TodoService } from './todo.service';
 import { faker } from '@faker-js/faker';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import getRandomObject from 'src/common/utils/getRandomObject';
+import { UpdateTodoDto } from './dto/update-todo.dto';
 
 //
 // unit test
@@ -12,10 +13,12 @@ describe('TodoService', () => {
   const mockFindManyFn = jest.fn().mockResolvedValue(mockTodos);
   const mockCreatedTodo: object = getRandomObject(); // structure doesn't matter
   const mockCreateFn = jest.fn().mockResolvedValue(mockCreatedTodo);
+  const mockUpdateFn = jest.fn();
   const mockPrismaService = {
     todo: {
       findMany: mockFindManyFn,
       create: mockCreateFn,
+      update: mockUpdateFn,
     },
   };
   const todoService = new TodoService(
@@ -53,5 +56,25 @@ describe('TodoService', () => {
       },
     });
     expect(actual).toEqual(await mockPrismaService.todo.create());
+  });
+
+  // update()
+  describe('update()', () => {
+    test('happy path', async () => {
+      const mockUserId = faker.string.sample();
+      const mockTodoId = faker.string.sample(); // format doesn't matter
+      const validDto: UpdateTodoDto = {
+        done: faker.datatype.boolean(),
+        label: faker.lorem.sentence(),
+      };
+      const mockUpdatedTodo = getRandomObject();
+      mockPrismaService.todo.update.mockResolvedValue(mockUpdatedTodo);
+      const actual = await todoService.update(mockUserId, mockTodoId, validDto);
+      expect(actual).toEqual(await mockPrismaService.todo.update());
+    });
+
+    test.todo('Todo not found');
+
+    test.todo('unknown error');
   });
 });
