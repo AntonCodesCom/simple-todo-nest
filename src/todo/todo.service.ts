@@ -61,9 +61,8 @@ export class TodoService {
     //   throw err;
     // }
     return await this.prismaService.todo.update({
-      where: { id: '', userId: '' },
-      // data: updateTodoDto,
-      data: {},
+      where: { id, userId },
+      data: updateTodoDto,
     });
   }
 

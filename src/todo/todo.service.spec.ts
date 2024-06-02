@@ -70,6 +70,13 @@ describe('TodoService', () => {
       const mockUpdatedTodo = getRandomObject();
       mockPrismaService.todo.update.mockResolvedValue(mockUpdatedTodo);
       const actual = await todoService.update(mockUserId, mockTodoId, validDto);
+      expect(mockPrismaService.todo.update).toHaveBeenCalledWith({
+        where: {
+          id: mockTodoId,
+          userId: mockUserId,
+        },
+        data: validDto,
+      });
       expect(actual).toEqual(await mockPrismaService.todo.update());
     });
 
