@@ -10,10 +10,6 @@ import validatorOptions from 'src/common/validator-options';
 import { aliceUserId } from './fixtures/user-ids';
 import { faker } from '@faker-js/faker';
 
-// test data
-const mockTodos = todosFixture;
-const mockFindAllByUserIdFn = jest.fn().mockReturnValue(mockTodos); // TODO: random return value
-
 // utility
 // TODO: replace deprecated `faker.datatype.json()`
 function getRandomObjectArray(): object[] {
@@ -63,14 +59,6 @@ describe('Todo REST', () => {
     test('invalid authorization', async () => {
       await request(app.getHttpServer()).get('/todo').expect(401);
     });
-  });
-
-  test.skip('GET /todo', async () => {
-    const response = await request(app.getHttpServer())
-      .get('/todo')
-      .expect(200);
-    expect(mockFindAllByUserIdFn).toHaveBeenCalled();
-    expect(response.body).toEqual(mockTodoService.findAll());
   });
 
   describe('POST /todo', () => {
