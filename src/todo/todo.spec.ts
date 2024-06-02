@@ -98,7 +98,7 @@ describe('Todo REST', () => {
 
   // PATCH /todo/:id
   describe('PATCH /todo/:id', () => {
-    const mockTodoId = faker.string.sample();
+    const mockTodoId = faker.string.uuid();
     const validBody: UpdateTodoDto = {
       done: faker.datatype.boolean(),
       label: faker.lorem.sentence(),
@@ -122,7 +122,14 @@ describe('Todo REST', () => {
         .expect(401);
     });
 
-    test.todo('invalid `id` parameter');
+    test('invalid `id` parameter (non-UUID)', async () => {
+      const invalidTodoId = 'non-uuid';
+      await request(app.getHttpServer())
+        .patch(`/todo/${invalidTodoId}`)
+        .set('Authorization', authorizationHeader)
+        .send(validBody)
+        .expect(400);
+    });
 
     test('invalid request body', async () => {
       const invalidBody = new UpdateTodoDto();

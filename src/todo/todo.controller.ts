@@ -68,7 +68,7 @@ export class TodoController {
   @Patch(':id')
   async update(
     @UserId() userId: string,
-    // @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updateTodoDto: UpdateTodoDto,
   ) /*: Promise<TodoEntity>*/ {
     // const updatedTodo = await this.todoService.update(
