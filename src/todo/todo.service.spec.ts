@@ -5,6 +5,7 @@ import { CreateTodoDto } from './dto/create-todo.dto';
 import getRandomObject from 'src/common/utils/getRandomObject';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { initTodo } from './entities/todo.entity';
 
 //
 // unit test
@@ -46,14 +47,16 @@ describe('TodoService', () => {
   // create()
   test('create()', async () => {
     const mockUserId = faker.string.sample();
-    const validDto: CreateTodoDto = {
-      label: faker.lorem.sentence(),
-    };
-    const actual = await todoService.create(validDto, mockUserId);
+    // defining the entire entity as create DTO to test that
+    // only allowed properties are passed to the database
+    const potentiallyUnsafeDto = initTodo({
+      userId: '!!!__UNSAFE_USER_ID__!!!',
+    }) as CreateTodoDto;
+    const actual = await todoService.create(potentiallyUnsafeDto, mockUserId);
     expect(mockPrismaService.todo.create).toHaveBeenCalledWith({
       data: {
-        ...validDto,
         userId: mockUserId,
+        label: potentiallyUnsafeDto.label,
       },
     });
     expect(actual).toEqual(await mockPrismaService.todo.create());
@@ -63,21 +66,29 @@ describe('TodoService', () => {
   describe('update()', () => {
     const mockUserId = faker.string.sample();
     const mockTodoId = faker.string.sample(); // format doesn't matter
-    const validDto: UpdateTodoDto = {
-      done: faker.datatype.boolean(),
-      label: faker.lorem.sentence(),
-    };
+    // defining the entire entity as update DTO to test that
+    // only allowed properties are passed to the database
+    const potentiallyUnsafeDto = initTodo({
+      userId: '!!!__UNSAFE_USER_ID__!!!',
+    }) as UpdateTodoDto;
 
     test('happy path', async () => {
       const mockUpdatedTodo = getRandomObject();
       mockPrismaService.todo.update.mockResolvedValue(mockUpdatedTodo);
-      const actual = await todoService.update(mockUserId, mockTodoId, validDto);
+      const actual = await todoService.update(
+        mockUserId,
+        mockTodoId,
+        potentiallyUnsafeDto,
+      );
       expect(mockPrismaService.todo.update).toHaveBeenCalledWith({
         where: {
           id: mockTodoId,
           userId: mockUserId,
         },
-        data: validDto,
+        data: {
+          label: potentiallyUnsafeDto.label,
+          done: potentiallyUnsafeDto.done,
+        },
       });
       expect(actual).toEqual(await mockPrismaService.todo.update());
     });
@@ -88,7 +99,11 @@ describe('TodoService', () => {
         clientVersion: '',
       });
       mockPrismaService.todo.update.mockRejectedValue(mockError);
-      const actual = await todoService.update(mockUserId, mockTodoId, validDto);
+      const actual = await todoService.update(
+        mockUserId,
+        mockTodoId,
+        potentiallyUnsafeDto,
+      );
       expect(actual).toBeNull();
     });
 
@@ -105,7 +120,7 @@ describe('TodoService', () => {
       const mockError = new TestError('', code);
       mockPrismaService.todo.update.mockRejectedValue(mockError);
       await expect(
-        todoService.update(mockUserId, mockTodoId, validDto),
+        todoService.update(mockUserId, mockTodoId, potentiallyUnsafeDto),
       ).rejects.toBe(mockError);
     });
   });
