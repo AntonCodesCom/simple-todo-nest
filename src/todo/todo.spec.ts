@@ -22,10 +22,12 @@ describe('Todo REST', () => {
   const mockCreatedTodo: object = getRandomObject(); // structure doesn't matter
   const mockCreateFn = jest.fn().mockResolvedValue(mockCreatedTodo);
   const mockUpdateFn = jest.fn();
+  const mockRemoveFn = jest.fn();
   const mockTodoService = {
     findAll: mockFindAllFn,
     create: mockCreateFn,
     update: mockUpdateFn,
+    remove: mockRemoveFn,
   };
 
   // init SUT app
@@ -126,5 +128,25 @@ describe('Todo REST', () => {
         .send(validBody)
         .expect(400);
     });
+  });
+
+  // DELETE /todo/:id
+  describe('DELETE /todo/:id', () => {
+    const mockTodoId = faker.string.uuid();
+
+    test('happy path', async () => {
+      const mockDeletedTodo = getRandomObject();
+      mockTodoService.remove.mockResolvedValue(mockDeletedTodo);
+      const response = await request(app.getHttpServer())
+        .delete(`/todo/${mockTodoId}`)
+        .set('Authorization', authorizationHeader)
+        .expect(200);
+    });
+
+    test.todo('Todo not found');
+
+    test.todo('invalid authorization');
+
+    test.todo('invalid `id` parameter (non-UUID)');
   });
 });
