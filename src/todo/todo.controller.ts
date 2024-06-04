@@ -89,11 +89,10 @@ export class TodoController {
     @UserId() userId: string,
     @Param('id', ParseUUIDPipe) id: string,
   ) /*: Promise<TodoEntity> */ {
-    // const deletedTodo = await this.todoService.remove(userId, id);
-    // if (!deletedTodo) {
-    //   throw new NotFoundException();
-    // }
-    // return deletedTodo;
-    return await this.todoService.remove(userId, id);
+    const deletedTodo = await this.todoService.remove(userId, id);
+    if (!deletedTodo) {
+      throw new NotFoundException();
+    }
+    return deletedTodo;
   }
 }

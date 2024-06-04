@@ -148,7 +148,13 @@ describe('Todo REST', () => {
       expect(response.body).toEqual(await mockTodoService.remove());
     });
 
-    test.todo('Todo not found');
+    test('Todo not found', async () => {
+      mockTodoService.remove.mockResolvedValue(null);
+      await request(app.getHttpServer())
+        .delete(`/todo/${mockTodoId}`)
+        .set('Authorization', authorizationHeader)
+        .expect(404);
+    });
 
     test('invalid authorization', async () => {
       await request(app.getHttpServer())

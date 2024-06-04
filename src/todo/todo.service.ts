@@ -82,6 +82,7 @@ export class TodoService {
     //   }
     //   throw err;
     // }
+    return null;
   }
 
   async clear(): Promise<void> {
