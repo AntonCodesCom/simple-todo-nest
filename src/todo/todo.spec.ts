@@ -35,7 +35,7 @@ describe('Todo REST', () => {
     })
       .overrideProvider(TodoService)
       .useValue(mockTodoService)
-      .compile(); // TODO: override interceptor (AuthInterceptor)
+      .compile();
     app = moduleFixture.createNestApplication();
     await app.init();
   });
