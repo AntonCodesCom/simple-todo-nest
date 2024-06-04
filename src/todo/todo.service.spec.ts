@@ -151,5 +151,22 @@ describe('TodoService', () => {
       const actual = await todoService.remove(mockUserId, mockTodoId);
       expect(actual).toBeNull();
     });
+
+    test('unknown prisma error', async () => {
+      class TestError extends Error {
+        constructor(
+          public message: string,
+          public code: string,
+        ) {
+          super(message);
+        }
+      }
+      const code = 'P2025'; // same code as for "Todo not found" to prevent false positives
+      const mockError = new TestError('', code);
+      mockPrismaService.todo.delete.mockRejectedValue(mockError);
+      await expect(todoService.remove(mockUserId, mockTodoId)).rejects.toBe(
+        mockError,
+      );
+    });
   });
 });

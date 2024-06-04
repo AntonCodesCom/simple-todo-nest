@@ -68,26 +68,19 @@ export class TodoService {
    * @returns `TodoEntity` when the todo is deleted successfully
    * @returns `null` if a todo with given `id` and `userId` not found
    */
-  async remove(userId: string, id: string) /*: Promise<TodoEntity | null>*/ {
-    // try {
-    //   return await this.prismaService.todo.delete({
-    //     where: { id, userId },
-    //   });
-    // } catch (err) {
-    //   if (
-    //     err instanceof PrismaClientKnownRequestError &&
-    //     err.code === 'P2025'
-    //   ) {
-    //     return null;
-    //   }
-    //   throw err;
-    // }
+  async remove(userId: string, id: string): Promise<TodoEntity | null> {
     try {
       return await this.prismaService.todo.delete({
         where: { id, userId },
       });
     } catch (err) {
-      return null;
+      if (
+        err instanceof PrismaClientKnownRequestError &&
+        err.code === 'P2025'
+      ) {
+        return null;
+      }
+      throw err;
     }
   }
 
