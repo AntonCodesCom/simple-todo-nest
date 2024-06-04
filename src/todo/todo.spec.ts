@@ -141,11 +141,17 @@ describe('Todo REST', () => {
         .delete(`/todo/${mockTodoId}`)
         .set('Authorization', authorizationHeader)
         .expect(200);
+      // TODO: assert service method args
+      // TODO: assert return value
     });
 
     test.todo('Todo not found');
 
-    test.todo('invalid authorization');
+    test('invalid authorization', async () => {
+      await request(app.getHttpServer())
+        .delete(`/todo/${mockTodoId}`)
+        .expect(401);
+    });
 
     test.todo('invalid `id` parameter (non-UUID)');
   });
