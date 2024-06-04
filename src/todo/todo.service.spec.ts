@@ -133,7 +133,12 @@ describe('TodoService', () => {
     test('happy path', async () => {
       mockPrismaService.todo.delete.mockResolvedValue(getRandomObject());
       const actual = await todoService.remove(mockUserId, mockTodoId);
-      // TODO: assert prisma method args
+      expect(mockPrismaService.todo.delete).toHaveBeenCalledWith({
+        where: {
+          id: mockTodoId,
+          userId: mockUserId,
+        },
+      });
       expect(actual).toEqual(await mockPrismaService.todo.delete());
     });
   });
