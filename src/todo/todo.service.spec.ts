@@ -141,5 +141,15 @@ describe('TodoService', () => {
       });
       expect(actual).toEqual(await mockPrismaService.todo.delete());
     });
+
+    test('Todo not found', async () => {
+      const mockError = new PrismaClientKnownRequestError('', {
+        code: 'P2025',
+        clientVersion: '',
+      });
+      mockPrismaService.todo.delete.mockRejectedValue(mockError);
+      const actual = await todoService.remove(mockUserId, mockTodoId);
+      expect(actual).toBeNull();
+    });
   });
 });
