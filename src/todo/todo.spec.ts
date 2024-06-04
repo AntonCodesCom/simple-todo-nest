@@ -142,7 +142,7 @@ describe('Todo REST', () => {
         .set('Authorization', authorizationHeader)
         .expect(200);
       // TODO: assert service method args
-      // TODO: assert return value
+      expect(response.body).toEqual(await mockTodoService.remove());
     });
 
     test.todo('Todo not found');

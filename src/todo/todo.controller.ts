@@ -94,5 +94,6 @@ export class TodoController {
     //   throw new NotFoundException();
     // }
     // return deletedTodo;
+    return await this.todoService.remove('userId', 'id');
   }
 }
