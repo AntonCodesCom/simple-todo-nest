@@ -22,10 +22,12 @@ describe('Todo REST', () => {
   const mockCreatedTodo: object = getRandomObject(); // structure doesn't matter
   const mockCreateFn = jest.fn().mockResolvedValue(mockCreatedTodo);
   const mockUpdateFn = jest.fn();
+  const mockRemoveFn = jest.fn();
   const mockTodoService = {
     findAll: mockFindAllFn,
     create: mockCreateFn,
     update: mockUpdateFn,
+    remove: mockRemoveFn,
   };
 
   // init SUT app
@@ -124,6 +126,46 @@ describe('Todo REST', () => {
         .patch(`/todo/${invalidTodoId}`)
         .set('Authorization', authorizationHeader)
         .send(validBody)
+        .expect(400);
+    });
+  });
+
+  // DELETE /todo/:id
+  describe('DELETE /todo/:id', () => {
+    const mockTodoId = faker.string.uuid();
+
+    test('happy path', async () => {
+      mockTodoService.remove.mockResolvedValue(getRandomObject());
+      const response = await request(app.getHttpServer())
+        .delete(`/todo/${mockTodoId}`)
+        .set('Authorization', authorizationHeader)
+        .expect(200);
+      expect(mockTodoService.remove).toHaveBeenCalledWith(
+        mockUserId,
+        mockTodoId,
+      );
+      expect(response.body).toEqual(await mockTodoService.remove());
+    });
+
+    test('Todo not found', async () => {
+      mockTodoService.remove.mockResolvedValue(null);
+      await request(app.getHttpServer())
+        .delete(`/todo/${mockTodoId}`)
+        .set('Authorization', authorizationHeader)
+        .expect(404);
+    });
+
+    test('invalid authorization', async () => {
+      await request(app.getHttpServer())
+        .delete(`/todo/${mockTodoId}`)
+        .expect(401);
+    });
+
+    test('invalid `id` parameter (non-UUID)', async () => {
+      const invalidTodoId = 'non-uuid';
+      await request(app.getHttpServer())
+        .delete(`/todo/${invalidTodoId}`)
+        .set('Authorization', authorizationHeader)
         .expect(400);
     });
   });

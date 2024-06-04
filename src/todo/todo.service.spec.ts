@@ -15,12 +15,12 @@ describe('TodoService', () => {
   const mockFindManyFn = jest.fn().mockResolvedValue(mockTodos);
   const mockCreatedTodo: object = getRandomObject(); // structure doesn't matter
   const mockCreateFn = jest.fn().mockResolvedValue(mockCreatedTodo);
-  const mockUpdateFn = jest.fn();
   const mockPrismaService = {
     todo: {
       findMany: mockFindManyFn,
       create: mockCreateFn,
-      update: mockUpdateFn,
+      update: jest.fn(),
+      delete: jest.fn(),
     },
   };
   const todoService = new TodoService(
@@ -122,6 +122,51 @@ describe('TodoService', () => {
       await expect(
         todoService.update(mockUserId, mockTodoId, potentiallyUnsafeDto),
       ).rejects.toBe(mockError);
+    });
+  });
+
+  // remove()
+  describe('remove()', () => {
+    const mockUserId = faker.string.sample();
+    const mockTodoId = faker.string.sample();
+
+    test('happy path', async () => {
+      mockPrismaService.todo.delete.mockResolvedValue(getRandomObject());
+      const actual = await todoService.remove(mockUserId, mockTodoId);
+      expect(mockPrismaService.todo.delete).toHaveBeenCalledWith({
+        where: {
+          id: mockTodoId,
+          userId: mockUserId,
+        },
+      });
+      expect(actual).toEqual(await mockPrismaService.todo.delete());
+    });
+
+    test('Todo not found', async () => {
+      const mockError = new PrismaClientKnownRequestError('', {
+        code: 'P2025',
+        clientVersion: '',
+      });
+      mockPrismaService.todo.delete.mockRejectedValue(mockError);
+      const actual = await todoService.remove(mockUserId, mockTodoId);
+      expect(actual).toBeNull();
+    });
+
+    test('unknown prisma error', async () => {
+      class TestError extends Error {
+        constructor(
+          public message: string,
+          public code: string,
+        ) {
+          super(message);
+        }
+      }
+      const code = 'P2025'; // same code as for "Todo not found" to prevent false positives
+      const mockError = new TestError('', code);
+      mockPrismaService.todo.delete.mockRejectedValue(mockError);
+      await expect(todoService.remove(mockUserId, mockTodoId)).rejects.toBe(
+        mockError,
+      );
     });
   });
 });

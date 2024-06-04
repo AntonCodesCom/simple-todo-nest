@@ -36,7 +36,6 @@ import { TodoEntity } from './entities/todo.entity';
 export class TodoController {
   constructor(private readonly todoService: TodoService) {}
 
-  // @UseInterceptors(AuthInterceptor) // TODO: remove after completing writing tests
   @ApiCreatedResponse({
     type: TodoEntity,
   })
@@ -49,7 +48,6 @@ export class TodoController {
     return this.todoService.create(createTodoDto, userId);
   }
 
-  // @UseInterceptors(AuthInterceptor) // TODO: remove after completing writing tests
   @ApiOkResponse({
     type: TodoEntity,
     isArray: true,
@@ -59,7 +57,6 @@ export class TodoController {
     return this.todoService.findAll(userId);
   }
 
-  // @UseInterceptors(AuthInterceptor) // TODO: remove after completing writing tests
   @ApiOkResponse({
     type: TodoEntity,
   })
