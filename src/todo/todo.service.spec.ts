@@ -15,12 +15,12 @@ describe('TodoService', () => {
   const mockFindManyFn = jest.fn().mockResolvedValue(mockTodos);
   const mockCreatedTodo: object = getRandomObject(); // structure doesn't matter
   const mockCreateFn = jest.fn().mockResolvedValue(mockCreatedTodo);
-  const mockUpdateFn = jest.fn();
   const mockPrismaService = {
     todo: {
       findMany: mockFindManyFn,
       create: mockCreateFn,
-      update: mockUpdateFn,
+      update: jest.fn(),
+      delete: jest.fn(),
     },
   };
   const todoService = new TodoService(
@@ -122,6 +122,19 @@ describe('TodoService', () => {
       await expect(
         todoService.update(mockUserId, mockTodoId, potentiallyUnsafeDto),
       ).rejects.toBe(mockError);
+    });
+  });
+
+  // remove()
+  describe('remove()', () => {
+    const mockUserId = faker.string.sample();
+    const mockTodoId = faker.string.sample();
+
+    test('happy path', async () => {
+      mockPrismaService.todo.delete.mockResolvedValue(getRandomObject());
+      const actual = await todoService.remove(mockUserId, mockTodoId);
+      // TODO: assert prisma method args
+      expect(actual).toEqual(await mockPrismaService.todo.delete());
     });
   });
 });

@@ -82,7 +82,9 @@ export class TodoService {
     //   }
     //   throw err;
     // }
-    return null;
+    return await this.prismaService.todo.delete({
+      where: { id, userId },
+    });
   }
 
   async clear(): Promise<void> {
