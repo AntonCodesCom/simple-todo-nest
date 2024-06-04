@@ -48,7 +48,8 @@ export class TodoEntity implements TodoModel {
   createdAt: Date;
 }
 
-function initTodo(partial: Partial<TodoEntity>): TodoEntity {
+// for data seeding and testing
+export function initTodo(partial: Partial<TodoEntity>): TodoEntity {
   return {
     id: partial.id || faker.string.uuid(),
     userId: partial.userId || aliceUserId,

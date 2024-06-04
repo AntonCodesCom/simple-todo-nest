@@ -5,6 +5,7 @@ import { CreateTodoDto } from './dto/create-todo.dto';
 import getRandomObject from 'src/common/utils/getRandomObject';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { initTodo } from './entities/todo.entity';
 
 //
 // unit test
@@ -46,14 +47,16 @@ describe('TodoService', () => {
   // create()
   test('create()', async () => {
     const mockUserId = faker.string.sample();
-    const validDto: CreateTodoDto = {
-      label: faker.lorem.sentence(),
-    };
-    const actual = await todoService.create(validDto, mockUserId);
+    // defining the entire entity as create DTO to test that
+    // only allowed properties are passed to the database
+    const potentiallyUnsafeDto = initTodo({
+      userId: '!!!__UNSAFE_USER_ID__!!!',
+    }) as CreateTodoDto;
+    const actual = await todoService.create(potentiallyUnsafeDto, mockUserId);
     expect(mockPrismaService.todo.create).toHaveBeenCalledWith({
       data: {
-        ...validDto,
         userId: mockUserId,
+        label: potentiallyUnsafeDto.label,
       },
     });
     expect(actual).toEqual(await mockPrismaService.todo.create());

@@ -20,8 +20,8 @@ export class TodoService {
   ): Promise<TodoEntity> {
     return await this.prismaService.todo.create({
       data: {
-        ...createTodoDto,
         userId,
+        label: createTodoDto.label,
       },
     });
   }
