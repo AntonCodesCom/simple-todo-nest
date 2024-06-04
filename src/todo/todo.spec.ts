@@ -141,7 +141,10 @@ describe('Todo REST', () => {
         .delete(`/todo/${mockTodoId}`)
         .set('Authorization', authorizationHeader)
         .expect(200);
-      // TODO: assert service method args
+      expect(mockTodoService.remove).toHaveBeenCalledWith(
+        mockUserId,
+        mockTodoId,
+      );
       expect(response.body).toEqual(await mockTodoService.remove());
     });
 
