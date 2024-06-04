@@ -135,8 +135,7 @@ describe('Todo REST', () => {
     const mockTodoId = faker.string.uuid();
 
     test('happy path', async () => {
-      const mockDeletedTodo = getRandomObject();
-      mockTodoService.remove.mockResolvedValue(mockDeletedTodo);
+      mockTodoService.remove.mockResolvedValue(getRandomObject());
       const response = await request(app.getHttpServer())
         .delete(`/todo/${mockTodoId}`)
         .set('Authorization', authorizationHeader)
