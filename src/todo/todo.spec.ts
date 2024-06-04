@@ -156,6 +156,12 @@ describe('Todo REST', () => {
         .expect(401);
     });
 
-    test.todo('invalid `id` parameter (non-UUID)');
+    test('invalid `id` parameter (non-UUID)', async () => {
+      const invalidTodoId = 'non-uuid';
+      await request(app.getHttpServer())
+        .delete(`/todo/${invalidTodoId}`)
+        .set('Authorization', authorizationHeader)
+        .expect(400);
+    });
   });
 });
