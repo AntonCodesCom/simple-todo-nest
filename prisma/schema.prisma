@@ -16,7 +16,7 @@ datasource db {
 model Todo {
   id String @id @default(uuid())
   userId String
-  label String
+  label String @db.VarChar(1000)
   done Boolean @default(false)
   createdAt DateTime @default(now())
 }
