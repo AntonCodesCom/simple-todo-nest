@@ -110,7 +110,6 @@ describe('Todo REST', () => {
         .set('Authorization', authorizationHeader)
         .send(validBody)
         .expect(404);
-      // TODO: figure out whether it is necessary to assert service method args
     });
 
     test('invalid authorization', async () => {
