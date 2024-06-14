@@ -1,6 +1,13 @@
 import { TodoEntity, initTodos } from '../entities/todo.entity';
 import { aliceUserId, bobUserId } from './user-ids';
 
+/**
+ * Todo items fixture.
+ *
+ * This fixture MUST contain at least 3 elements with
+ * `userId = aliceUserId` in order for end-to-end tests
+ * to function correctly.
+ */
 const todosFixture: TodoEntity[] = initTodos([
   {
     id: 'ef1e68db-6e1d-42f0-8e31-574694236062',
