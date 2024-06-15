@@ -4,9 +4,13 @@ import { aliceUserId, bobUserId } from './user-ids';
 /**
  * Todo items fixture.
  *
- * This fixture MUST contain at least 3 elements with
+ * This fixture MUST contain at least 1 element with
  * `userId = aliceUserId` in order for end-to-end tests
  * to function correctly.
+ *
+ * The mentioned element(s) SHOULD have all their fields
+ * explicitly defined with non-random values for better
+ * anti-false-positives checks in end-to-end tests.
  */
 const todosFixture: TodoEntity[] = initTodos([
   {
