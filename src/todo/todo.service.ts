@@ -50,7 +50,7 @@ export class TodoService {
       const { label, done } = updateTodoDto;
       return await this.prismaService.todo.update({
         where: { id, userId },
-        data: { label, done },
+        data: { label: label.trim(), done },
       });
     } catch (err) {
       if (
