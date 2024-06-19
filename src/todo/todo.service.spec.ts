@@ -95,6 +95,22 @@ describe('TodoService', () => {
       expect(actual).toEqual(await mockPrismaService.todo.update());
     });
 
+    test('absent label', async () => {
+      const dto: UpdateTodoDto = {
+        done: faker.datatype.boolean(),
+      };
+      await todoService.update(mockUserId, mockTodoId, dto);
+      expect(mockPrismaService.todo.update).toHaveBeenCalledWith({
+        where: {
+          id: mockTodoId,
+          userId: mockUserId,
+        },
+        data: {
+          done: dto.done,
+        },
+      });
+    });
+
     test('Todo not found', async () => {
       const mockError = new PrismaClientKnownRequestError('', {
         code: 'P2025',
