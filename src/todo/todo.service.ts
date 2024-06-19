@@ -21,7 +21,7 @@ export class TodoService {
     return await this.prismaService.todo.create({
       data: {
         userId,
-        label: createTodoDto.label,
+        label: createTodoDto.label.trim(),
       },
     });
   }

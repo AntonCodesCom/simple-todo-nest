@@ -51,12 +51,13 @@ describe('TodoService', () => {
     // only allowed properties are passed to the database
     const potentiallyUnsafeDto = initTodo({
       userId: '!!!__UNSAFE_USER_ID__!!!',
+      label: `   label with white space ${faker.string.sample}  `,
     }) as CreateTodoDto;
     const actual = await todoService.create(potentiallyUnsafeDto, mockUserId);
     expect(mockPrismaService.todo.create).toHaveBeenCalledWith({
       data: {
         userId: mockUserId,
-        label: potentiallyUnsafeDto.label,
+        label: potentiallyUnsafeDto.label.trim(),
       },
     });
     expect(actual).toEqual(await mockPrismaService.todo.create());
