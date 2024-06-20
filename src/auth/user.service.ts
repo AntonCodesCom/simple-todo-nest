@@ -1,30 +1,28 @@
 import { Injectable } from '@nestjs/common';
-import { UserService } from 'src/auth/user.service';
 import { EnvService } from 'src/env/env.service';
-import { TodoService } from 'src/todo/todo.service';
+import { PrismaService } from 'src/prisma/prisma.service';
+import usersFixture from './fixtures/users.fixture';
 
 @Injectable()
-export class SeedService {
+export class UserService {
   constructor(
     private readonly envService: EnvService,
-    private readonly todoService: TodoService,
-    private readonly userService: UserService,
+    private readonly prismaService: PrismaService,
   ) {}
 
   async clear(): Promise<void> {
     if (this.envService.isProd) {
       throw new Error('Data seeding is not allowed in production mode.');
     }
-    await this.todoService.clear();
-    await this.userService.clear();
+    await this.prismaService.user.deleteMany({});
   }
 
   async seed(): Promise<void> {
     if (this.envService.isProd) {
       throw new Error('Data seeding is not allowed in production mode.');
     }
-    await this.clear();
-    await this.userService.seed();
-    await this.todoService.seed();
+    await this.prismaService.user.createMany({
+      data: usersFixture,
+    });
   }
 }
