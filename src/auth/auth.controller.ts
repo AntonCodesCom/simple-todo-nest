@@ -5,9 +5,11 @@ import {
   HttpCode,
   Post,
   UnauthorizedException,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiBody,
   ApiOkResponse,
   ApiTags,
@@ -17,15 +19,30 @@ import { LoginDto } from './dto/login.dto';
 import { LoggedInDto } from './dto/logged-in.dto';
 import { AuthService } from './auth.service';
 import { InvalidCredentialsException } from './exceptions';
+import { MeDto } from './dto/me.dto';
+import UserId from './user-id.decorator';
+import { UserService } from './user.service';
+import { AuthInterceptor } from './auth.interceptor';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userService: UserService,
+  ) {}
 
   @Get('me')
-  me() {
-    return {};
+  @UseInterceptors(AuthInterceptor)
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: MeDto })
+  @ApiUnauthorizedResponse()
+  async me(@UserId() userId: string): Promise<MeDto> {
+    const meDto = await this.userService.getMe(userId);
+    if (!meDto) {
+      throw new Error('Unexpected error occurred while fetching the user.');
+    }
+    return meDto;
   }
 
   @ApiBody({

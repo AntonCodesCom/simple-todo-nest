@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { User as UserModel } from '@prisma/client';
 
 /**
@@ -5,6 +6,11 @@ import { User as UserModel } from '@prisma/client';
  */
 export class UserEntity implements UserModel {
   id: string;
+
+  @ApiProperty({
+    example: 'alice',
+  })
   username: string;
+
   passwordHash: string;
 }
