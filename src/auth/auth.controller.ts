@@ -8,7 +8,9 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Get('me')
-  me() {}
+  me() {
+    return {};
+  }
 
   @Post('login')
   login() {}
