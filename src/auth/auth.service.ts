@@ -30,11 +30,13 @@ export class AuthService {
       throw new InvalidCredentialsException();
     }
     const { id, username, passwordHash } = user;
-    // // const passwordMatch = await verify(passwordHash, loginDto.password);
-    // const passwordMatch = passwordHash === loginDto.password; // TODO: argon2
-    // if (!passwordMatch) {
-    //   throw new InvalidCredentialsException();
-    // }
+    const passwordMatch = await AuthService.verifyPassword(
+      passwordHash,
+      loginDto.password,
+    );
+    if (!passwordMatch) {
+      throw new InvalidCredentialsException();
+    }
     return {
       accessToken: AuthService.generateAccessToken(
         id,
@@ -58,6 +60,6 @@ export class AuthService {
   }
 
   static generateAccessToken(userId: string, jwtSecret: string): string {
-    return userId;
+    return userId; // TODO: jwt
   }
 }
