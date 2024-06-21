@@ -57,9 +57,9 @@ export class AuthController {
   @HttpCode(200)
   @Post('login')
   async login(@Body() loginDto: LoginDto): Promise<LoggedInDto> {
-    // // if (!isStrongPassword(loginDto.password)) {
-    // //   throw new UnauthorizedException(); // invalid password will obviously fail
-    // // }
+    // if (!isStrongPassword(loginDto.password)) {
+    //   throw new UnauthorizedException(); // invalid password will obviously fail
+    // }
     try {
       return await this.authService.login(loginDto);
     } catch (err) {
