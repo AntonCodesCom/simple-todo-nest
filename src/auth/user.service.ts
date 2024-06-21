@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EnvService } from 'src/env/env.service';
 import { PrismaService } from 'src/prisma/prisma.service';
-import usersFixture from './fixtures/users.fixture';
+import { getUsersFixture } from './fixtures/users.fixture';
 import { MeDto } from './dto/me.dto';
 
 @Injectable()
@@ -34,7 +34,7 @@ export class UserService {
       throw new Error('Data seeding is not allowed in production mode.');
     }
     await this.prismaService.user.createMany({
-      data: usersFixture,
+      data: await getUsersFixture(),
     });
   }
 }
