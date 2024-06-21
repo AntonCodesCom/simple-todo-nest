@@ -31,6 +31,7 @@ async function bootstrap() {
         in: 'header',
       })
       .addTag('seed')
+      .addTag('auth')
       .addTag('todo')
       .build();
     const document = SwaggerModule.createDocument(app, config);

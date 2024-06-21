@@ -4,11 +4,11 @@ import * as request from 'supertest';
 import { TodoService } from './todo.service';
 import { TodoModule } from './todo.module';
 import { CreateTodoDto } from './dto/create-todo.dto';
-import { aliceUserId } from './fixtures/user-ids';
 import getRandomObjectArray from 'src/common/utils/getRandomObjectArray';
 import { faker } from '@faker-js/faker';
 import getRandomObject from 'src/common/utils/getRandomObject';
 import { UpdateTodoDto } from './dto/update-todo.dto';
+import { aliceUserId } from 'src/auth/fixtures/users.fixture';
 
 //
 // integration test
