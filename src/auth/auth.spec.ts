@@ -14,10 +14,8 @@ import { InvalidCredentialsException } from './exceptions';
 //
 describe('Auth REST', () => {
   let app: INestApplication;
-  const mockLoggedInDto = getRandomObject();
-  const mockLoginFn = jest.fn().mockResolvedValue(mockLoggedInDto);
   const mockAuthService = {
-    login: mockLoginFn,
+    login: jest.fn(),
   };
 
   // init SUT app
@@ -42,6 +40,7 @@ describe('Auth REST', () => {
     };
 
     test('happy path', async () => {
+      mockAuthService.login.mockResolvedValue(getRandomObject());
       const response = await request(app.getHttpServer())
         .post('/auth/login')
         .send(dto)
@@ -53,7 +52,7 @@ describe('Auth REST', () => {
 
     test('invalid credentials', async () => {
       const error = new InvalidCredentialsException();
-      mockLoginFn.mockRejectedValue(error);
+      mockAuthService.login.mockRejectedValue(error);
       await request(app.getHttpServer())
         .post('/auth/login')
         .send(dto)
@@ -62,7 +61,7 @@ describe('Auth REST', () => {
 
     test('unknown error', async () => {
       const error = new Error();
-      mockLoginFn.mockRejectedValue(error);
+      mockAuthService.login.mockRejectedValue(error);
       await request(app.getHttpServer())
         .post('/auth/login')
         .send(dto)
