@@ -45,27 +45,25 @@ export class AuthController {
     return meDto;
   }
 
-  // @ApiBody({
-  //   type: LoginDto,
-  // })
-  // @ApiOkResponse({ type: LoggedInDto })
-  // @ApiBadRequestResponse()
-  // @ApiUnauthorizedResponse()
+  @ApiBody({
+    type: LoginDto,
+  })
+  @ApiOkResponse({ type: LoggedInDto })
+  @ApiBadRequestResponse()
+  @ApiUnauthorizedResponse()
   @HttpCode(200)
   @Post('login')
-  async login(@Body() loginDto: LoginDto) /*: Promise<LoggedInDto>*/ {
+  async login(@Body() loginDto: LoginDto): Promise<LoggedInDto> {
     // // if (!isStrongPassword(loginDto.password)) {
     // //   throw new UnauthorizedException(); // invalid password will obviously fail
     // // }
-    // try {
-    //   return await this.authService.login(loginDto);
-    // } catch (err) {
-    //   if (err instanceof InvalidCredentialsException) {
-    //     throw new UnauthorizedException();
-    //   }
-    //   throw err;
-    // }
-    //
-    return await this.authService.login(loginDto);
+    try {
+      return await this.authService.login(loginDto);
+    } catch (err) {
+      if (err instanceof InvalidCredentialsException) {
+        throw new UnauthorizedException();
+      }
+      // throw err;
+    }
   }
 }

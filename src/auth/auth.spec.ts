@@ -7,6 +7,7 @@ import { UserService } from './user.service';
 import getRandomObject from 'src/common/utils/getRandomObject';
 import { LoginDto } from './dto/login.dto';
 import { faker } from '@faker-js/faker';
+import { InvalidCredentialsException } from './exceptions';
 
 //
 // integration test
@@ -35,11 +36,12 @@ describe('Auth REST', () => {
 
   // login
   describe('POST /auth/login', () => {
+    const dto: LoginDto = {
+      username: faker.person.firstName(),
+      password: faker.string.sample(),
+    };
+
     test('happy path', async () => {
-      const dto: LoginDto = {
-        username: faker.person.firstName(),
-        password: faker.string.sample(),
-      };
       const response = await request(app.getHttpServer())
         .post('/auth/login')
         .send(dto)
@@ -48,5 +50,16 @@ describe('Auth REST', () => {
       expect(mockAuthService.login).toHaveBeenCalledWith(dto);
       expect(response.body).toEqual(await mockAuthService.login());
     });
+
+    test('invalid credentials', async () => {
+      const error = new InvalidCredentialsException();
+      mockLoginFn.mockRejectedValue(error);
+      await request(app.getHttpServer())
+        .post('/auth/login')
+        .send(dto)
+        .expect(401);
+    });
+
+    test.todo('unknown error');
   });
 });
