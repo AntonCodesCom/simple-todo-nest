@@ -4,10 +4,14 @@ import { LoggedInDto } from './dto/logged-in.dto';
 import { InvalidCredentialsException } from './exceptions';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { verify } from 'argon2';
+import { EnvService } from 'src/env/env.service';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly envService: EnvService,
+    private readonly prismaService: PrismaService,
+  ) {}
 
   /**
    * Login.
@@ -31,13 +35,11 @@ export class AuthService {
     // if (!passwordMatch) {
     //   throw new InvalidCredentialsException();
     // }
-    // return {
-    //   accessToken: this.generateAccessToken0(id),
-    //   username,
-    // };
-    //
     return {
-      accessToken: AuthService.generateAccessToken(id, ''),
+      accessToken: AuthService.generateAccessToken(
+        id,
+        this.envService.jwtSecret,
+      ),
       username,
     };
   }

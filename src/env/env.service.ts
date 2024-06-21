@@ -12,4 +12,8 @@ export class EnvService {
   get port() {
     return this.configService.get<number>('port');
   }
+
+  get jwtSecret() {
+    return ''; // TODO
+  }
 }

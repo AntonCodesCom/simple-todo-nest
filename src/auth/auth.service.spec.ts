@@ -7,6 +7,7 @@ import { initUser } from './entities/user.entity';
 // unit test
 //
 describe('AuthService', () => {
+  const mockEnvService = { jwtSecret: faker.string.sample() };
   const mockFindUniqueFn = jest.fn(); //.mockResolvedValue(mockTodos);
   const mockPrismaService = {
     user: {
@@ -17,7 +18,10 @@ describe('AuthService', () => {
   AuthService.verifyPassword = mockVerifyPasswordFn;
   const mockGenerateAccessTokenFn = jest.fn();
   AuthService.generateAccessToken = mockGenerateAccessTokenFn;
-  const authService = new AuthService(mockPrismaService as any);
+  const authService = new AuthService(
+    mockEnvService as any, // EnvService
+    mockPrismaService as any, // PrismaService
+  );
 
   // login
   describe('login()', () => {
@@ -28,7 +32,7 @@ describe('AuthService', () => {
       };
       const mockFoundUser = await initUser({});
       mockFindUniqueFn.mockResolvedValue(mockFoundUser);
-      const actual = await authService.login(loginDto);
+      const actual = await authService.login(loginDto); // act
       expect(mockFindUniqueFn).toHaveBeenCalledTimes(1);
       expect(mockFindUniqueFn).toHaveBeenCalledWith({
         where: {
@@ -38,8 +42,8 @@ describe('AuthService', () => {
       expect(mockGenerateAccessTokenFn).toHaveBeenCalledTimes(1);
       expect(mockGenerateAccessTokenFn).toHaveBeenCalledWith(
         mockFoundUser.id,
-        '',
-      ); // TODO: jwtSecret
+        mockEnvService.jwtSecret,
+      );
       expect(actual).toEqual({
         username: mockFoundUser.username,
         accessToken: mockGenerateAccessTokenFn(),
