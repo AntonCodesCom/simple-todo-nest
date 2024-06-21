@@ -60,6 +60,13 @@ describe('Auth REST', () => {
         .expect(401);
     });
 
-    test.todo('unknown error');
+    test('unknown error', async () => {
+      const error = new Error();
+      mockLoginFn.mockRejectedValue(error);
+      await request(app.getHttpServer())
+        .post('/auth/login')
+        .send(dto)
+        .expect(500);
+    });
   });
 });
