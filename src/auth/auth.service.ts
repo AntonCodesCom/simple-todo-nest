@@ -26,9 +26,9 @@ export class AuthService {
         username: loginDto.username,
       },
     });
-    // if (!user) {
-    //   throw new InvalidCredentialsException();
-    // }
+    if (!user) {
+      throw new InvalidCredentialsException();
+    }
     const { id, username, passwordHash } = user;
     // // const passwordMatch = await verify(passwordHash, loginDto.password);
     // const passwordMatch = passwordHash === loginDto.password; // TODO: argon2

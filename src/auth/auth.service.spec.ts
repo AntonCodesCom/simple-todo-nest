@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { initUser } from './entities/user.entity';
+import { InvalidCredentialsException } from './exceptions';
 
 //
 // unit test
@@ -25,11 +26,12 @@ describe('AuthService', () => {
 
   // login
   describe('login()', () => {
+    const loginDto: LoginDto = {
+      username: faker.string.sample(),
+      password: faker.string.sample(),
+    };
+
     test('happy path', async () => {
-      const loginDto: LoginDto = {
-        username: faker.string.sample(),
-        password: faker.string.sample(),
-      };
       const mockFoundUser = await initUser({});
       mockFindUniqueFn.mockResolvedValue(mockFoundUser);
       const actual = await authService.login(loginDto); // act
@@ -49,5 +51,14 @@ describe('AuthService', () => {
         accessToken: mockGenerateAccessTokenFn(),
       });
     });
+
+    test('user not found', async () => {
+      mockFindUniqueFn.mockResolvedValue(null);
+      await expect(authService.login(loginDto)).rejects.toBeInstanceOf(
+        InvalidCredentialsException,
+      );
+    });
+
+    test.todo(`passwords don't match`);
   });
 });
