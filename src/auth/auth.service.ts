@@ -2,15 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { LoggedInDto } from './dto/logged-in.dto';
 import { InvalidCredentialsException } from './exceptions';
-import { EnvService } from 'src/env/env.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private readonly envService: EnvService,
-    private readonly prismaService: PrismaService,
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   /**
    * Login.

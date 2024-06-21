@@ -53,7 +53,7 @@ export class AuthController {
   // @ApiUnauthorizedResponse()
   @HttpCode(200)
   @Post('login')
-  async login(/*@Body() loginDto: LoginDto*/) /*: Promise<LoggedInDto>*/ {
+  async login(@Body() loginDto: LoginDto) /*: Promise<LoggedInDto>*/ {
     // // if (!isStrongPassword(loginDto.password)) {
     // //   throw new UnauthorizedException(); // invalid password will obviously fail
     // // }
@@ -66,6 +66,6 @@ export class AuthController {
     //   throw err;
     // }
     // return {}
-    return await this.authService.login({ username: '', password: '' });
+    return await this.authService.login(loginDto);
   }
 }

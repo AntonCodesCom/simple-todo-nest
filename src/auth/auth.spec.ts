@@ -5,6 +5,8 @@ import { AuthService } from './auth.service';
 import * as request from 'supertest';
 import { UserService } from './user.service';
 import getRandomObject from 'src/common/utils/getRandomObject';
+import { LoginDto } from './dto/login.dto';
+import { faker } from '@faker-js/faker';
 
 //
 // integration test
@@ -34,9 +36,15 @@ describe('Auth REST', () => {
   // login
   describe('POST /auth/login', () => {
     test('happy path', async () => {
+      const dto: LoginDto = {
+        username: faker.lorem.word(),
+        password: faker.string.sample(),
+      };
       const response = await request(app.getHttpServer())
         .post('/auth/login')
+        .send(dto)
         .expect(200);
+      expect(mockAuthService.login).toHaveBeenCalledWith(dto);
       expect(response.body).toEqual(await mockAuthService.login());
     });
   });
