@@ -1,5 +1,8 @@
 import { UserEntity } from '../entities/user.entity';
 
+export const aliceUserId = '878664be-1926-44ab-9c77-eb5d803369be';
+export const bobUserId = '5db73b24-bbc4-49a3-b6a5-ec36a240a7d5';
+
 /**
  * Users fixture.
  *
@@ -8,12 +11,12 @@ import { UserEntity } from '../entities/user.entity';
  */
 const usersFixture: UserEntity[] = [
   {
-    id: '878664be-1926-44ab-9c77-eb5d803369be',
+    id: aliceUserId,
     username: 'alice',
     passwordHash: 'Alice1111$', // TODO: argon2
   },
   {
-    id: '5db73b24-bbc4-49a3-b6a5-ec36a240a7d5',
+    id: bobUserId,
     username: 'bob',
     passwordHash: 'Bob2222$', // TODO: argon2
   },

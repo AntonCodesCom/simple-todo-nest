@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import todosFixture from './fixtures/todos';
+import todosFixture from './fixtures/todos.fixture';
 import { EnvService } from 'src/env/env.service';
 import { TodoEntity } from './entities/todo.entity';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';

@@ -1,5 +1,5 @@
+import { aliceUserId, bobUserId } from 'src/auth/fixtures/users.fixture';
 import { TodoEntity, initTodos } from '../entities/todo.entity';
-import { aliceUserId, bobUserId } from './user-ids';
 
 /**
  * Todo items fixture.
