@@ -2,8 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { LoggedInDto } from './dto/logged-in.dto';
 import { InvalidCredentialsException } from './exceptions';
-import { EnvService } from 'src/env/env.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { verify } from 'argon2';
+import { EnvService } from 'src/env/env.service';
 
 @Injectable()
 export class AuthService {
@@ -29,20 +30,36 @@ export class AuthService {
       throw new InvalidCredentialsException();
     }
     const { id, username, passwordHash } = user;
-    // const passwordMatch = await verify(passwordHash, loginDto.password);
-    const passwordMatch = passwordHash === loginDto.password; // TODO: argon2
+    const passwordMatch = await AuthService.verifyPassword(
+      passwordHash,
+      loginDto.password,
+    );
     if (!passwordMatch) {
       throw new InvalidCredentialsException();
     }
     return {
-      accessToken: this.generateAccessToken(id),
+      accessToken: AuthService.generateAccessToken(
+        id,
+        this.envService.jwtSecret,
+      ),
       username,
     };
   }
 
-  private generateAccessToken(userId: string): string {
+  static async verifyPassword(
+    passwordHash: string,
+    password: string,
+  ): Promise<boolean> {
+    return await verify(passwordHash, password);
+  }
+
+  private generateAccessToken0(userId: string): string {
     // const { jwtSecret } = this.envService;
     // return sign({ sub: userId }, jwtSecret);
+    return userId; // TODO: jwt
+  }
+
+  static generateAccessToken(userId: string, jwtSecret: string): string {
     return userId; // TODO: jwt
   }
 }

@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpCode,
+  InternalServerErrorException,
   Post,
   UnauthorizedException,
   UseInterceptors,
@@ -11,6 +12,7 @@ import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiBody,
+  ApiInternalServerErrorResponse,
   ApiOkResponse,
   ApiTags,
   ApiUnauthorizedResponse,
@@ -25,6 +27,7 @@ import { UserService } from './user.service';
 import { AuthInterceptor } from './auth.interceptor';
 
 @ApiTags('auth')
+@ApiInternalServerErrorResponse()
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -63,7 +66,7 @@ export class AuthController {
       if (err instanceof InvalidCredentialsException) {
         throw new UnauthorizedException();
       }
-      throw err;
+      throw new InternalServerErrorException();
     }
   }
 }

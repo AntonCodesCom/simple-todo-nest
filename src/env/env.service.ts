@@ -9,6 +9,10 @@ export class EnvService {
     return this.configService.get('nodeEnv') === 'production';
   }
 
+  get jwtSecret() {
+    return this.configService.get<string>('jwtSecret');
+  }
+
   get port() {
     return this.configService.get<number>('port');
   }
