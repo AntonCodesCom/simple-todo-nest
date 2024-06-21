@@ -65,7 +65,6 @@ export class AuthController {
     //   }
     //   throw err;
     // }
-    // return {}
     return await this.authService.login(loginDto);
   }
 }

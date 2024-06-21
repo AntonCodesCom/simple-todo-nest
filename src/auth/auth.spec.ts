@@ -37,7 +37,7 @@ describe('Auth REST', () => {
   describe('POST /auth/login', () => {
     test('happy path', async () => {
       const dto: LoginDto = {
-        username: faker.lorem.word(),
+        username: faker.person.firstName(),
         password: faker.string.sample(),
       };
       const response = await request(app.getHttpServer())
