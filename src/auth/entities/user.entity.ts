@@ -17,6 +17,7 @@ export class UserEntity implements UserModel {
   passwordHash: string;
 }
 
+// initializer
 export async function initUser(
   partial: Partial<UserEntity>,
   password = 'User1111$',

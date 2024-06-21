@@ -3,6 +3,7 @@ import { LoginDto } from './dto/login.dto';
 import { LoggedInDto } from './dto/logged-in.dto';
 import { InvalidCredentialsException } from './exceptions';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { verify } from 'argon2';
 
 @Injectable()
 export class AuthService {
@@ -21,24 +22,40 @@ export class AuthService {
         username: loginDto.username,
       },
     });
-    if (!user) {
-      throw new InvalidCredentialsException();
-    }
+    // if (!user) {
+    //   throw new InvalidCredentialsException();
+    // }
     const { id, username, passwordHash } = user;
-    // const passwordMatch = await verify(passwordHash, loginDto.password);
-    const passwordMatch = passwordHash === loginDto.password; // TODO: argon2
-    if (!passwordMatch) {
-      throw new InvalidCredentialsException();
-    }
+    // // const passwordMatch = await verify(passwordHash, loginDto.password);
+    // const passwordMatch = passwordHash === loginDto.password; // TODO: argon2
+    // if (!passwordMatch) {
+    //   throw new InvalidCredentialsException();
+    // }
+    // return {
+    //   accessToken: this.generateAccessToken0(id),
+    //   username,
+    // };
+    //
     return {
-      accessToken: this.generateAccessToken(id),
+      accessToken: AuthService.generateAccessToken(id, ''),
       username,
     };
   }
 
-  private generateAccessToken(userId: string): string {
+  static async verifyPassword(
+    passwordHash: string,
+    password: string,
+  ): Promise<boolean> {
+    return await verify(passwordHash, password);
+  }
+
+  private generateAccessToken0(userId: string): string {
     // const { jwtSecret } = this.envService;
     // return sign({ sub: userId }, jwtSecret);
     return userId; // TODO: jwt
+  }
+
+  static generateAccessToken(userId: string, jwtSecret: string): string {
+    return userId;
   }
 }

@@ -44,6 +44,7 @@ describe('Auth REST', () => {
         .post('/auth/login')
         .send(dto)
         .expect(200);
+      expect(mockAuthService.login).toHaveBeenCalledTimes(1);
       expect(mockAuthService.login).toHaveBeenCalledWith(dto);
       expect(response.body).toEqual(await mockAuthService.login());
     });
