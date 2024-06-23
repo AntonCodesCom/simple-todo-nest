@@ -36,25 +36,17 @@ export class AuthService {
       throw new InvalidCredentialsException();
     }
     return {
-      accessToken: sign({ sub: id }, this.envService.jwtSecret), // TODO: expires
+      accessToken: sign({ sub: id }, this.envService.jwtSecret, {
+        expiresIn: '4w',
+      }),
       username,
+      // TODO: password hash test
     };
-  }
-
-  static async verifyPassword(
-    passwordHash: string,
-    password: string,
-  ): Promise<boolean> {
-    return await verify(passwordHash, password);
   }
 
   private generateAccessToken0(userId: string): string {
     // const { jwtSecret } = this.envService;
     // return sign({ sub: userId }, jwtSecret);
-    return userId; // TODO: jwt
-  }
-
-  static generateAccessToken(userId: string, jwtSecret: string): string {
     return userId; // TODO: jwt
   }
 }

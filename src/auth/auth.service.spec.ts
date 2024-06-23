@@ -3,7 +3,7 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { initUser } from './entities/user.entity';
 import { InvalidCredentialsException } from './exceptions';
-import { sign } from 'jsonwebtoken';
+import { sign, verify } from 'jsonwebtoken';
 
 //
 // unit test (non-mocked 'argon2' and 'jsonwebtoken')
@@ -37,11 +37,9 @@ describe('AuthService', () => {
           username: loginDto.username,
         },
       });
-      expect(actual).toEqual({
-        username: mockFoundUser.username,
-        accessToken: sign({ sub: mockFoundUser.id }, mockEnvService.jwtSecret),
-      });
-      // TODO: handle JWT expiry
+      expect(actual.username).toBe(mockFoundUser.username);
+      const decoded = verify(actual.accessToken, mockEnvService.jwtSecret);
+      expect(decoded.sub).toBe(mockFoundUser.id);
     });
 
     test('user not found', async () => {

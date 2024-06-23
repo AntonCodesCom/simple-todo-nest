@@ -30,9 +30,9 @@ export class AuthInterceptor implements NestInterceptor {
     try {
       const decoded = verify(accessToken, this.envService.jwtSecret);
       req.userId = decoded.sub as string;
+      return next.handle();
     } catch (err) {
       throw new UnauthorizedException();
     }
-    return next.handle();
   }
 }
