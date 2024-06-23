@@ -3,7 +3,7 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { initUser } from './entities/user.entity';
 import { InvalidCredentialsException } from './exceptions';
-import { sign, verify } from 'jsonwebtoken';
+import { verify } from 'jsonwebtoken';
 
 //
 // unit test (non-mocked 'argon2' and 'jsonwebtoken')
