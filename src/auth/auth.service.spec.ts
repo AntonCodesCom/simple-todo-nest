@@ -25,7 +25,7 @@ describe('AuthService', () => {
   describe('login()', () => {
     const loginDto: LoginDto = {
       username: faker.string.sample(),
-      password: 'valid-password',
+      password: faker.string.sample(),
     };
 
     test('happy path', async () => {
@@ -54,7 +54,7 @@ describe('AuthService', () => {
 
     test(`passwords don't match`, async () => {
       mockFindUniqueFn.mockResolvedValue(
-        await initUser({}, 'INVALID_PASSWORD'),
+        await initUser({}, 'DIFFERENT_PASSWORD'),
       );
       await expect(authService.login(loginDto)).rejects.toBeInstanceOf(
         InvalidCredentialsException,
