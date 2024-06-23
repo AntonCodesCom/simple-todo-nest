@@ -5,11 +5,14 @@ import {
   NestInterceptor,
   UnauthorizedException,
 } from '@nestjs/common';
-import { isUUID } from 'class-validator';
+import { verify } from 'jsonwebtoken';
 import { Observable } from 'rxjs';
+import { EnvService } from 'src/env/env.service';
 
 @Injectable()
 export class AuthInterceptor implements NestInterceptor {
+  constructor(private readonly envService: EnvService) {}
+
   intercept(
     context: ExecutionContext,
     next: CallHandler<any>,
@@ -23,11 +26,13 @@ export class AuthInterceptor implements NestInterceptor {
     if (authParts[0] !== 'Bearer') {
       throw new UnauthorizedException('Only `Bearer` token type is supported.');
     }
-    const userId = authParts[1];
-    if (!isUUID(userId)) {
-      throw new UnauthorizedException('User ID must be a UUID.');
+    const accessToken = authParts[1];
+    try {
+      const decoded = verify(accessToken, this.envService.jwtSecret);
+      req.userId = decoded.sub as string;
+      return next.handle();
+    } catch (err) {
+      throw new UnauthorizedException();
     }
-    req.userId = userId as string;
-    return next.handle();
   }
 }

@@ -9,14 +9,19 @@ import { faker } from '@faker-js/faker';
 import getRandomObject from 'src/common/utils/getRandomObject';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { aliceUserId } from 'src/auth/fixtures/users.fixture';
+import { EnvService } from 'src/env/env.service';
+import { EnvModule } from 'src/env/env.module';
+import { sign } from 'jsonwebtoken';
 
 //
 // integration test
 //
 describe('Todo REST', () => {
   let app: INestApplication;
+  const mockJwtSecret = faker.string.sample();
   const mockUserId = aliceUserId;
-  const authorizationHeader = `Bearer ${mockUserId}`;
+  const mockAccessToken = sign({ sub: mockUserId }, mockJwtSecret);
+  const authorizationHeader = `Bearer ${mockAccessToken}`;
   const mockTodos = getRandomObjectArray(); // randomizing to prevent false positives
   const mockFindAllFn = jest.fn().mockResolvedValue(mockTodos);
   const mockCreatedTodo: object = getRandomObject(); // structure doesn't matter
@@ -33,10 +38,12 @@ describe('Todo REST', () => {
   // init SUT app
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [TodoModule],
+      imports: [TodoModule, EnvModule],
     })
       .overrideProvider(TodoService)
       .useValue(mockTodoService)
+      .overrideProvider(EnvService)
+      .useValue({ jwtSecret: mockJwtSecret })
       .compile();
     app = moduleFixture.createNestApplication();
     await app.init();

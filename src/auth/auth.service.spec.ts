@@ -1,11 +1,12 @@
-import { faker } from '@faker-js/faker';
+import { fa, faker } from '@faker-js/faker';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { initUser } from './entities/user.entity';
 import { InvalidCredentialsException } from './exceptions';
+import { verify } from 'jsonwebtoken';
 
 //
-// unit test
+// unit test (non-mocked 'argon2' and 'jsonwebtoken')
 //
 describe('AuthService', () => {
   const mockEnvService = { jwtSecret: faker.string.sample() };
@@ -28,32 +29,20 @@ describe('AuthService', () => {
     };
 
     test('happy path', async () => {
-      AuthService.verifyPassword = jest.fn().mockResolvedValue(true);
-      const mockGenerateAccessTokenFn = jest.fn();
-      AuthService.generateAccessToken = mockGenerateAccessTokenFn;
-      const mockFoundUser = await initUser({});
-      mockFindUniqueFn.mockResolvedValue(mockFoundUser);
+      const mockFoundUser = await initUser({}, loginDto.password);
+      mockFindUniqueFn.mockResolvedValueOnce(mockFoundUser);
       const actual = await authService.login(loginDto); // act
-      expect(mockFindUniqueFn).toHaveBeenCalledTimes(1);
       expect(mockFindUniqueFn).toHaveBeenCalledWith({
         where: {
           username: loginDto.username,
         },
       });
-      expect(AuthService.verifyPassword).toHaveBeenCalledTimes(1);
-      expect(AuthService.verifyPassword).toHaveBeenCalledWith(
-        mockFoundUser.passwordHash,
-        loginDto.password,
-      );
-      expect(mockGenerateAccessTokenFn).toHaveBeenCalledTimes(1);
-      expect(mockGenerateAccessTokenFn).toHaveBeenCalledWith(
-        mockFoundUser.id,
-        mockEnvService.jwtSecret,
-      );
       expect(actual).toEqual({
         username: mockFoundUser.username,
-        accessToken: mockGenerateAccessTokenFn(),
+        accessToken: actual.accessToken, // asserting this below
       });
+      const decoded = verify(actual.accessToken, mockEnvService.jwtSecret);
+      expect(decoded.sub).toBe(mockFoundUser.id);
     });
 
     test('user not found', async () => {
@@ -64,8 +53,9 @@ describe('AuthService', () => {
     });
 
     test(`passwords don't match`, async () => {
-      AuthService.verifyPassword = jest.fn().mockResolvedValue(false);
-      mockFindUniqueFn.mockResolvedValue(await initUser({}));
+      mockFindUniqueFn.mockResolvedValue(
+        await initUser({}, 'DIFFERENT_PASSWORD'),
+      );
       await expect(authService.login(loginDto)).rejects.toBeInstanceOf(
         InvalidCredentialsException,
       );

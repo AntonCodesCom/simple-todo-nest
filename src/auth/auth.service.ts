@@ -5,6 +5,7 @@ import { InvalidCredentialsException } from './exceptions';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { verify } from 'argon2';
 import { EnvService } from 'src/env/env.service';
+import { sign } from 'jsonwebtoken';
 
 @Injectable()
 export class AuthService {
@@ -30,36 +31,21 @@ export class AuthService {
       throw new InvalidCredentialsException();
     }
     const { id, username, passwordHash } = user;
-    const passwordMatch = await AuthService.verifyPassword(
-      passwordHash,
-      loginDto.password,
-    );
+    const passwordMatch = await verify(passwordHash, loginDto.password);
     if (!passwordMatch) {
       throw new InvalidCredentialsException();
     }
     return {
-      accessToken: AuthService.generateAccessToken(
-        id,
-        this.envService.jwtSecret,
-      ),
+      accessToken: sign({ sub: id }, this.envService.jwtSecret, {
+        expiresIn: '4w',
+      }),
       username,
     };
-  }
-
-  static async verifyPassword(
-    passwordHash: string,
-    password: string,
-  ): Promise<boolean> {
-    return await verify(passwordHash, password);
   }
 
   private generateAccessToken0(userId: string): string {
     // const { jwtSecret } = this.envService;
     // return sign({ sub: userId }, jwtSecret);
-    return userId; // TODO: jwt
-  }
-
-  static generateAccessToken(userId: string, jwtSecret: string): string {
     return userId; // TODO: jwt
   }
 }

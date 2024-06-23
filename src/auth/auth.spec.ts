@@ -8,6 +8,7 @@ import getRandomObject from 'src/common/utils/getRandomObject';
 import { LoginDto } from './dto/login.dto';
 import { faker } from '@faker-js/faker';
 import { InvalidCredentialsException } from './exceptions';
+import { EnvModule } from 'src/env/env.module';
 
 //
 // integration test
@@ -21,12 +22,14 @@ describe('Auth REST', () => {
   // init SUT app
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AuthModule],
+      imports: [AuthModule, EnvModule],
     })
       .overrideProvider(AuthService)
       .useValue(mockAuthService)
       .overrideProvider(UserService)
       .useValue({})
+      // .overrideProvider(EnvService)
+      // .useValue({ jwtSecret: faker.string.sample() })
       .compile();
     app = moduleFixture.createNestApplication();
     await app.init();
