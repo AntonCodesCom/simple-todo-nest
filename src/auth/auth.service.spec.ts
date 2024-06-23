@@ -37,7 +37,10 @@ describe('AuthService', () => {
           username: loginDto.username,
         },
       });
-      expect(actual.username).toBe(mockFoundUser.username);
+      expect(actual).toEqual({
+        username: mockFoundUser.username,
+        accessToken: actual.accessToken, // asserting this below
+      });
       const decoded = verify(actual.accessToken, mockEnvService.jwtSecret);
       expect(decoded.sub).toBe(mockFoundUser.id);
     });

@@ -40,7 +40,6 @@ export class AuthService {
         expiresIn: '4w',
       }),
       username,
-      // TODO: password hash test
     };
   }
 
