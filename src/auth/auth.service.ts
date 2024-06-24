@@ -11,6 +11,7 @@ import { EnvService } from 'src/env/env.service';
 import { sign } from 'jsonwebtoken';
 import { SignupDto } from './dto/signup.dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { validateOrReject } from 'class-validator';
 
 @Injectable()
 export class AuthService {
@@ -58,8 +59,14 @@ export class AuthService {
    * @param {SignupDto} signupDto
    * @returns {LoggedInDto}
    * @throws `UsernameTakenException`
+   * @throws `ValidationError[]` - see `class-validator`
+   * @throws `Error`
    */
   async signup(signupDto: SignupDto): Promise<LoggedInDto> {
+    const dtoToValidate = new SignupDto();
+    dtoToValidate.username = signupDto.username;
+    dtoToValidate.password = signupDto.password;
+    await validateOrReject(dtoToValidate);
     const passwordHash = await hash(signupDto.password);
     try {
       const { id, username } = await this.prismaService.user.create({

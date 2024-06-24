@@ -12,7 +12,7 @@ import { SignupDto } from './dto/signup.dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 //
-// unit test (non-mocked 'argon2' and 'jsonwebtoken')
+// unit test (non-mocked 'argon2', 'jsonwebtoken' and 'class-validator')
 //
 describe('AuthService', () => {
   const mockEnvService = { jwtSecret: faker.string.sample() };
@@ -76,8 +76,8 @@ describe('AuthService', () => {
   // signup
   describe('signup()', () => {
     const signupDto: SignupDto = {
-      username: faker.string.sample(),
-      password: faker.string.sample(),
+      username: faker.person.firstName().toLowerCase(),
+      password: 'User1111$' + faker.string.sample(),
     };
 
     test('happy path', async () => {
@@ -111,7 +111,7 @@ describe('AuthService', () => {
         code: 'P2002',
         clientVersion: '',
       });
-      mockCreateFn.mockRejectedValue(mockError);
+      mockCreateFn.mockRejectedValueOnce(mockError);
       await expect(authService.signup(signupDto)).rejects.toBeInstanceOf(
         UsernameTakenException,
       );
@@ -122,7 +122,7 @@ describe('AuthService', () => {
         code: 'different-error-code',
         clientVersion: '',
       });
-      mockCreateFn.mockRejectedValue(mockError);
+      mockCreateFn.mockRejectedValueOnce(mockError);
       await expect(authService.signup(signupDto)).rejects.toBe(mockError); // must be `.toBe()`
     });
 
@@ -137,8 +137,18 @@ describe('AuthService', () => {
       }
       const code = 'P2002'; // same code as for "username taken" to prevent false positives
       const mockError = new TestError('', code);
-      mockCreateFn.mockRejectedValue(mockError);
+      mockCreateFn.mockRejectedValueOnce(mockError);
       await expect(authService.signup(signupDto)).rejects.toBe(mockError); // must be `.toBe()`
+    });
+
+    test('invalid input', async () => {
+      const invalidDto: SignupDto = {
+        username: 'UPPERCASE_NOT_ALLOWED_FOR_USERNAME',
+        password: 'weakpassword',
+      };
+      await expect(authService.signup(invalidDto)).rejects.toBeInstanceOf(
+        Array,
+      );
     });
   });
 });

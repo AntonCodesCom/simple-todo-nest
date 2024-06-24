@@ -1,11 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsStrongPassword } from 'class-validator';
+import { Allow, IsNotEmpty, IsStrongPassword } from 'class-validator';
 
 export class SignupDto {
   @ApiProperty({
     example: 'alice',
   })
-  @IsNotEmpty()
+  // @IsNotEmpty()
+  @Allow()
+  // TODO: validation
   username: string;
 
   @ApiProperty({
@@ -15,5 +17,6 @@ export class SignupDto {
   })
   @IsNotEmpty()
   @IsStrongPassword()
+  // TODO: validation
   password: string;
 }
