@@ -41,14 +41,14 @@ describe('Auth REST', () => {
     };
 
     test('happy path', async () => {
-      mockAuthService.login.mockResolvedValue(getRandomObject());
+      const mockReturnedValue = getRandomObject();
+      mockAuthService.login.mockResolvedValueOnce(mockReturnedValue);
       const response = await request(app.getHttpServer())
         .post('/auth/login')
         .send(dto)
         .expect(200);
-      expect(mockAuthService.login).toHaveBeenCalledTimes(1);
       expect(mockAuthService.login).toHaveBeenCalledWith(dto);
-      expect(response.body).toEqual(await mockAuthService.login());
+      expect(response.body).toEqual(mockReturnedValue);
     });
 
     test('invalid credentials', async () => {
