@@ -7,7 +7,10 @@ import { UserService } from './user.service';
 import getRandomObject from 'src/common/utils/getRandomObject';
 import { LoginDto } from './dto/login.dto';
 import { faker } from '@faker-js/faker';
-import { InvalidCredentialsException } from './exceptions';
+import {
+  InvalidCredentialsException,
+  UsernameTakenException,
+} from './exceptions';
 import { EnvModule } from 'src/env/env.module';
 import { SignupDto } from './dto/signup.dto';
 
@@ -88,6 +91,24 @@ describe('Auth REST', () => {
         .expect(201);
       expect(mockAuthService.signup).toHaveBeenCalledWith(dto);
       expect(response.body).toEqual(mockSignupReturnedValue);
+    });
+
+    test('username taken', async () => {
+      const error = new UsernameTakenException();
+      mockAuthService.signup.mockRejectedValue(error);
+      await request(app.getHttpServer())
+        .post('/auth/signup')
+        .send(dto)
+        .expect(409);
+    });
+
+    test('unknown error', async () => {
+      const error = new Error();
+      mockAuthService.signup.mockRejectedValue(error);
+      await request(app.getHttpServer())
+        .post('/auth/signup')
+        .send(dto)
+        .expect(500);
     });
   });
 });
