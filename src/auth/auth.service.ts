@@ -41,9 +41,7 @@ export class AuthService {
       throw new InvalidCredentialsException();
     }
     return {
-      accessToken: sign({ sub: id }, this.envService.jwtSecret, {
-        expiresIn: '4w',
-      }),
+      accessToken: this.generateAccessToken(id),
       username,
     };
   }

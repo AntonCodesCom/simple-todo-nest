@@ -28,8 +28,6 @@ describe('Auth REST', () => {
       .useValue(mockAuthService)
       .overrideProvider(UserService)
       .useValue({})
-      // .overrideProvider(EnvService)
-      // .useValue({ jwtSecret: faker.string.sample() })
       .compile();
     app = moduleFixture.createNestApplication();
     await app.init();
