@@ -11,8 +11,17 @@ import * as jsonwebtoken from 'jsonwebtoken';
 import { SignupDto } from './dto/signup.dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
+// mocking dependency
+const mockValidateOrRejectFn = jest.fn();
+jest.mock('class-validator', () => ({
+  ...jest.requireActual('class-validator'),
+  validateOrReject: (args: any) => {
+    return mockValidateOrRejectFn(args);
+  },
+}));
+
 //
-// unit test (non-mocked 'argon2', 'jsonwebtoken' and 'class-validator')
+// unit test (non-mocked 'argon2' and 'jsonwebtoken')
 //
 describe('AuthService', () => {
   const mockEnvService = { jwtSecret: faker.string.sample() };
@@ -76,8 +85,8 @@ describe('AuthService', () => {
   // signup
   describe('signup()', () => {
     const signupDto: SignupDto = {
-      username: faker.person.firstName().toLowerCase(),
-      password: 'User1111$' + faker.string.sample(),
+      username: faker.string.sample(),
+      password: faker.string.sample(),
     };
 
     test('happy path', async () => {
@@ -142,13 +151,18 @@ describe('AuthService', () => {
     });
 
     test('invalid input', async () => {
+      const mockRejectedValue = new Error();
+      mockValidateOrRejectFn.mockRejectedValueOnce(mockRejectedValue);
       const invalidDto: SignupDto = {
-        username: 'UPPERCASE_NOT_ALLOWED_FOR_USERNAME',
-        password: 'weakpassword',
+        username: faker.string.sample(),
+        password: faker.string.sample(),
       };
-      await expect(authService.signup(invalidDto)).rejects.toBeInstanceOf(
-        Array,
+      await expect(authService.signup(invalidDto)).rejects.toBe(
+        mockRejectedValue,
       );
+      const arg = mockValidateOrRejectFn.mock.lastCall[0];
+      expect(arg).toEqual(invalidDto);
+      expect(arg).toBeInstanceOf(SignupDto);
     });
   });
 });
