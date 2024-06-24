@@ -117,6 +117,28 @@ describe('AuthService', () => {
       );
     });
 
-    test.todo('unknown Prisma error');
+    test('different PrismaClientKnownRequestError', async () => {
+      const mockError = new PrismaClientKnownRequestError('', {
+        code: 'different-error-code',
+        clientVersion: '',
+      });
+      mockCreateFn.mockRejectedValue(mockError);
+      await expect(authService.signup(signupDto)).rejects.toBe(mockError); // must be `.toBe()`
+    });
+
+    test('unknown Prisma error', async () => {
+      class TestError extends Error {
+        constructor(
+          public message: string,
+          public code: string,
+        ) {
+          super(message);
+        }
+      }
+      const code = 'P2002'; // same code as for "username taken" to prevent false positives
+      const mockError = new TestError('', code);
+      mockCreateFn.mockRejectedValue(mockError);
+      await expect(authService.signup(signupDto)).rejects.toBe(mockError); // must be `.toBe()`
+    });
   });
 });
