@@ -4,7 +4,6 @@ import {
   Controller,
   Get,
   HttpCode,
-  InternalServerErrorException,
   Post,
   UnauthorizedException,
   UseInterceptors,
@@ -73,8 +72,7 @@ export class AuthController {
       if (err instanceof InvalidCredentialsException) {
         throw new UnauthorizedException();
       }
-      // console.error(err);
-      throw new InternalServerErrorException();
+      throw err;
     }
   }
 

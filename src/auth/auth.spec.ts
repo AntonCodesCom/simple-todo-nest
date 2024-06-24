@@ -66,6 +66,7 @@ describe('Auth REST', () => {
     });
 
     test('unknown error', async () => {
+      app.useLogger(false);
       const error = new Error();
       mockAuthService.login.mockRejectedValue(error);
       await request(app.getHttpServer())
@@ -103,6 +104,7 @@ describe('Auth REST', () => {
     });
 
     test('unknown error', async () => {
+      app.useLogger(false);
       const error = new Error();
       mockAuthService.signup.mockRejectedValue(error);
       await request(app.getHttpServer())
