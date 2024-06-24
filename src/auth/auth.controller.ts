@@ -1,5 +1,6 @@
 import {
   Body,
+  ConflictException,
   Controller,
   Get,
   HttpCode,
@@ -12,6 +13,8 @@ import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiBody,
+  ApiConflictResponse,
+  ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiOkResponse,
   ApiTags,
@@ -20,11 +23,15 @@ import {
 import { LoginDto } from './dto/login.dto';
 import { LoggedInDto } from './dto/logged-in.dto';
 import { AuthService } from './auth.service';
-import { InvalidCredentialsException } from './exceptions';
+import {
+  InvalidCredentialsException,
+  UsernameTakenException,
+} from './exceptions';
 import { MeDto } from './dto/me.dto';
 import UserId from './user-id.decorator';
 import { UserService } from './user.service';
 import { AuthInterceptor } from './auth.interceptor';
+import { SignupDto } from './dto/signup.dto';
 
 @ApiTags('auth')
 @ApiInternalServerErrorResponse()
@@ -67,6 +74,26 @@ export class AuthController {
         throw new UnauthorizedException();
       }
       throw new InternalServerErrorException();
+    }
+  }
+
+  @ApiBody({
+    type: SignupDto,
+  })
+  @ApiCreatedResponse({ type: LoggedInDto })
+  @ApiBadRequestResponse()
+  @ApiConflictResponse({
+    description: 'When the username is already taken.',
+  })
+  @Post('signup')
+  async signup(@Body() signupDto: SignupDto): Promise<LoggedInDto> {
+    try {
+      return await this.authService.signup(signupDto);
+    } catch (err) {
+      if (err instanceof UsernameTakenException) {
+        throw new ConflictException('Username taken.');
+      }
+      throw err;
     }
   }
 }
