@@ -2,10 +2,14 @@ import { faker } from '@faker-js/faker';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { initUser } from './entities/user.entity';
-import { InvalidCredentialsException } from './exceptions';
+import {
+  InvalidCredentialsException,
+  UsernameTakenException,
+} from './exceptions';
 import * as argon2 from 'argon2';
 import * as jsonwebtoken from 'jsonwebtoken';
 import { SignupDto } from './dto/signup.dto';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 //
 // unit test (non-mocked 'argon2' and 'jsonwebtoken')
@@ -102,7 +106,16 @@ describe('AuthService', () => {
       expect(decoded.sub).toBe(mockCreatedUser.id);
     });
 
-    test.todo('username taken');
+    test('username taken', async () => {
+      const mockError = new PrismaClientKnownRequestError('', {
+        code: 'P2002',
+        clientVersion: '',
+      });
+      mockCreateFn.mockRejectedValue(mockError);
+      await expect(authService.signup(signupDto)).rejects.toBeInstanceOf(
+        UsernameTakenException,
+      );
+    });
 
     test.todo('unknown Prisma error');
   });
