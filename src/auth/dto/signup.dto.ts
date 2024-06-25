@@ -25,5 +25,6 @@ export class SignupDto {
       'Minimum 8 characters, at least 1 uppercase, at least 1 lowercase, at least 1 digit, at least 1 special character.',
   })
   @IsStrongPassword()
+  @MaxLength(256)
   password: string;
 }

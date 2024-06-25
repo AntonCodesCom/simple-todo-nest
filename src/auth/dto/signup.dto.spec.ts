@@ -99,5 +99,11 @@ describe('SignupDto', () => {
       const errors = await validate(dto);
       expect(errors.length).toBeGreaterThan(0);
     });
+
+    test('more than 256 characters long', async () => {
+      dto.password = faker.string.sample(257);
+      const errors = await validate(dto);
+      expect(errors.length).toBeGreaterThan(0);
+    });
   });
 });
