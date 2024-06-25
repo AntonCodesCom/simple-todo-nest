@@ -7,8 +7,12 @@ import { UserService } from './user.service';
 import getRandomObject from 'src/common/utils/getRandomObject';
 import { LoginDto } from './dto/login.dto';
 import { faker } from '@faker-js/faker';
-import { InvalidCredentialsException } from './exceptions';
+import {
+  InvalidCredentialsException,
+  UsernameTakenException,
+} from './exceptions';
 import { EnvModule } from 'src/env/env.module';
+import { SignupDto } from './dto/signup.dto';
 
 //
 // integration test
@@ -17,6 +21,7 @@ describe('Auth REST', () => {
   let app: INestApplication;
   const mockAuthService = {
     login: jest.fn(),
+    signup: jest.fn(),
   };
 
   // init SUT app
@@ -28,8 +33,6 @@ describe('Auth REST', () => {
       .useValue(mockAuthService)
       .overrideProvider(UserService)
       .useValue({})
-      // .overrideProvider(EnvService)
-      // .useValue({ jwtSecret: faker.string.sample() })
       .compile();
     app = moduleFixture.createNestApplication();
     await app.init();
@@ -43,14 +46,14 @@ describe('Auth REST', () => {
     };
 
     test('happy path', async () => {
-      mockAuthService.login.mockResolvedValue(getRandomObject());
+      const mockLoginReturnedValue = getRandomObject();
+      mockAuthService.login.mockResolvedValueOnce(mockLoginReturnedValue);
       const response = await request(app.getHttpServer())
         .post('/auth/login')
         .send(dto)
         .expect(200);
-      expect(mockAuthService.login).toHaveBeenCalledTimes(1);
       expect(mockAuthService.login).toHaveBeenCalledWith(dto);
-      expect(response.body).toEqual(await mockAuthService.login());
+      expect(response.body).toEqual(mockLoginReturnedValue);
     });
 
     test('invalid credentials', async () => {
@@ -63,10 +66,49 @@ describe('Auth REST', () => {
     });
 
     test('unknown error', async () => {
+      app.useLogger(false);
       const error = new Error();
       mockAuthService.login.mockRejectedValue(error);
       await request(app.getHttpServer())
         .post('/auth/login')
+        .send(dto)
+        .expect(500);
+    });
+  });
+
+  // signup
+  describe('POST /auth/signup', () => {
+    const dto: SignupDto = {
+      username: faker.person.firstName().toLowerCase(),
+      password: 'User1111$' + faker.string.alphanumeric(8),
+    };
+
+    test('happy path', async () => {
+      const mockSignupReturnedValue = getRandomObject();
+      mockAuthService.signup.mockResolvedValueOnce(mockSignupReturnedValue);
+      const response = await request(app.getHttpServer())
+        .post('/auth/signup')
+        .send(dto)
+        .expect(201);
+      expect(mockAuthService.signup).toHaveBeenCalledWith(dto);
+      expect(response.body).toEqual(mockSignupReturnedValue);
+    });
+
+    test('username taken', async () => {
+      const error = new UsernameTakenException();
+      mockAuthService.signup.mockRejectedValue(error);
+      await request(app.getHttpServer())
+        .post('/auth/signup')
+        .send(dto)
+        .expect(409);
+    });
+
+    test('unknown error', async () => {
+      app.useLogger(false);
+      const error = new Error();
+      mockAuthService.signup.mockRejectedValue(error);
+      await request(app.getHttpServer())
+        .post('/auth/signup')
         .send(dto)
         .expect(500);
     });

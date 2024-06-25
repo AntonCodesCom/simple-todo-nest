@@ -6,13 +6,11 @@ export class LoginDto {
     example: 'alice',
   })
   @Allow()
-  // TODO: validation
   username: string;
 
   @ApiProperty({
     example: 'Alice1111$',
   })
   @Allow()
-  // TODO: validation
   password: string;
 }

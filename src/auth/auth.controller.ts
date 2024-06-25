@@ -1,9 +1,9 @@
 import {
   Body,
+  ConflictException,
   Controller,
   Get,
   HttpCode,
-  InternalServerErrorException,
   Post,
   UnauthorizedException,
   UseInterceptors,
@@ -12,6 +12,8 @@ import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiBody,
+  ApiConflictResponse,
+  ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiOkResponse,
   ApiTags,
@@ -20,11 +22,17 @@ import {
 import { LoginDto } from './dto/login.dto';
 import { LoggedInDto } from './dto/logged-in.dto';
 import { AuthService } from './auth.service';
-import { InvalidCredentialsException } from './exceptions';
+import {
+  InvalidCredentialsException,
+  UsernameTakenException,
+} from './exceptions';
 import { MeDto } from './dto/me.dto';
 import UserId from './user-id.decorator';
 import { UserService } from './user.service';
 import { AuthInterceptor } from './auth.interceptor';
+import { SignupDto } from './dto/signup.dto';
+import { LoginValidationDto } from './dto/login-validation.dto';
+import { validateOrReject } from 'class-validator';
 
 @ApiTags('auth')
 @ApiInternalServerErrorResponse()
@@ -52,21 +60,46 @@ export class AuthController {
     type: LoginDto,
   })
   @ApiOkResponse({ type: LoggedInDto })
-  @ApiBadRequestResponse()
   @ApiUnauthorizedResponse()
   @HttpCode(200)
   @Post('login')
   async login(@Body() loginDto: LoginDto): Promise<LoggedInDto> {
-    // if (!isStrongPassword(loginDto.password)) {
-    //   throw new UnauthorizedException(); // invalid password will obviously fail
-    // }
+    const { username, password } = loginDto;
+    const loginValidationDto = new LoginValidationDto();
+    loginValidationDto.username = username;
+    loginValidationDto.password = password;
+    try {
+      await validateOrReject(loginValidationDto);
+    } catch (err) {
+      throw new UnauthorizedException();
+    }
     try {
       return await this.authService.login(loginDto);
     } catch (err) {
       if (err instanceof InvalidCredentialsException) {
         throw new UnauthorizedException();
       }
-      throw new InternalServerErrorException();
+      throw err;
+    }
+  }
+
+  @ApiBody({
+    type: SignupDto,
+  })
+  @ApiCreatedResponse({ type: LoggedInDto })
+  @ApiBadRequestResponse()
+  @ApiConflictResponse({
+    description: 'When the username is already taken.',
+  })
+  @Post('signup')
+  async signup(@Body() signupDto: SignupDto): Promise<LoggedInDto> {
+    try {
+      return await this.authService.signup(signupDto);
+    } catch (err) {
+      if (err instanceof UsernameTakenException) {
+        throw new ConflictException('Username taken.');
+      }
+      throw err;
     }
   }
 }

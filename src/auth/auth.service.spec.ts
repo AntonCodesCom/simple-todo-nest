@@ -1,9 +1,24 @@
-import { fa, faker } from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { initUser } from './entities/user.entity';
-import { InvalidCredentialsException } from './exceptions';
-import { verify } from 'jsonwebtoken';
+import {
+  InvalidCredentialsException,
+  UsernameTakenException,
+} from './exceptions';
+import * as argon2 from 'argon2';
+import * as jsonwebtoken from 'jsonwebtoken';
+import { SignupDto } from './dto/signup.dto';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+
+// mocking dependency
+const mockValidateOrRejectFn = jest.fn();
+jest.mock('class-validator', () => ({
+  ...jest.requireActual('class-validator'),
+  validateOrReject: (args: any) => {
+    return mockValidateOrRejectFn(args);
+  },
+}));
 
 //
 // unit test (non-mocked 'argon2' and 'jsonwebtoken')
@@ -11,9 +26,11 @@ import { verify } from 'jsonwebtoken';
 describe('AuthService', () => {
   const mockEnvService = { jwtSecret: faker.string.sample() };
   const mockFindUniqueFn = jest.fn();
+  const mockCreateFn = jest.fn();
   const mockPrismaService = {
     user: {
       findUnique: mockFindUniqueFn,
+      create: mockCreateFn,
     },
   };
   const authService = new AuthService(
@@ -41,7 +58,10 @@ describe('AuthService', () => {
         username: mockFoundUser.username,
         accessToken: actual.accessToken, // asserting this below
       });
-      const decoded = verify(actual.accessToken, mockEnvService.jwtSecret);
+      const decoded = jsonwebtoken.verify(
+        actual.accessToken,
+        mockEnvService.jwtSecret,
+      );
       expect(decoded.sub).toBe(mockFoundUser.id);
     });
 
@@ -59,6 +79,90 @@ describe('AuthService', () => {
       await expect(authService.login(loginDto)).rejects.toBeInstanceOf(
         InvalidCredentialsException,
       );
+    });
+  });
+
+  // signup
+  describe('signup()', () => {
+    const signupDto: SignupDto = {
+      username: faker.string.sample(),
+      password: faker.string.sample(),
+    };
+
+    test('happy path', async () => {
+      const mockCreatedUser = await initUser({});
+      mockCreateFn.mockResolvedValueOnce(mockCreatedUser);
+      const actual = await authService.signup(signupDto); // act
+      const actualPasswordHash =
+        mockCreateFn.mock.lastCall[0].data.passwordHash;
+      expect(mockCreateFn).toHaveBeenCalledWith({
+        data: {
+          username: signupDto.username,
+          passwordHash: actualPasswordHash, // asserting this later (below)
+        },
+      });
+      expect(await argon2.verify(actualPasswordHash, signupDto.password)).toBe(
+        true,
+      );
+      expect(actual).toEqual({
+        username: mockCreatedUser.username,
+        accessToken: actual.accessToken, // asserting this later (below)
+      });
+      const decoded = jsonwebtoken.verify(
+        actual.accessToken,
+        mockEnvService.jwtSecret,
+      );
+      expect(decoded.sub).toBe(mockCreatedUser.id);
+    });
+
+    test('username taken', async () => {
+      const mockError = new PrismaClientKnownRequestError('', {
+        code: 'P2002',
+        clientVersion: '',
+      });
+      mockCreateFn.mockRejectedValueOnce(mockError);
+      await expect(authService.signup(signupDto)).rejects.toBeInstanceOf(
+        UsernameTakenException,
+      );
+    });
+
+    test('different PrismaClientKnownRequestError', async () => {
+      const mockError = new PrismaClientKnownRequestError('', {
+        code: 'different-error-code',
+        clientVersion: '',
+      });
+      mockCreateFn.mockRejectedValueOnce(mockError);
+      await expect(authService.signup(signupDto)).rejects.toBe(mockError); // must be `.toBe()`
+    });
+
+    test('unknown Prisma error', async () => {
+      class TestError extends Error {
+        constructor(
+          public message: string,
+          public code: string,
+        ) {
+          super(message);
+        }
+      }
+      const code = 'P2002'; // same code as for "username taken" to prevent false positives
+      const mockError = new TestError('', code);
+      mockCreateFn.mockRejectedValueOnce(mockError);
+      await expect(authService.signup(signupDto)).rejects.toBe(mockError); // must be `.toBe()`
+    });
+
+    test('invalid input', async () => {
+      const mockRejectedValue = new Error();
+      mockValidateOrRejectFn.mockRejectedValueOnce(mockRejectedValue);
+      const invalidDto: SignupDto = {
+        username: faker.string.sample(),
+        password: faker.string.sample(),
+      };
+      await expect(authService.signup(invalidDto)).rejects.toBe(
+        mockRejectedValue,
+      );
+      const arg = mockValidateOrRejectFn.mock.lastCall[0];
+      expect(arg).toEqual(invalidDto);
+      expect(arg).toBeInstanceOf(SignupDto);
     });
   });
 });
