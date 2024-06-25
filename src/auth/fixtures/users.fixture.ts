@@ -1,7 +1,7 @@
 import { UserEntity, initUser } from '../entities/user.entity';
 
 export const aliceUserId = '878664be-1926-44ab-9c77-eb5d803369be';
-export const bobUserId = '5db73b24-bbc4-49a3-b6a5-ec36a240a7d5';
+export const billUserId = '5db73b24-bbc4-49a3-b6a5-ec36a240a7d5';
 
 /**
  * Users fixture factory.
@@ -12,6 +12,6 @@ export const bobUserId = '5db73b24-bbc4-49a3-b6a5-ec36a240a7d5';
 export function getUsersFixture(): Promise<UserEntity[]> {
   return Promise.all([
     initUser({ id: aliceUserId, username: 'alice' }, 'Alice1111$'),
-    initUser({ id: bobUserId, username: 'bob' }, 'Bob2222$'),
+    initUser({ id: billUserId, username: 'bill' }, 'Bill2222$'),
   ]);
 }

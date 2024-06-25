@@ -1,4 +1,4 @@
-import { aliceUserId, bobUserId } from 'src/auth/fixtures/users.fixture';
+import { aliceUserId, billUserId } from 'src/auth/fixtures/users.fixture';
 import { TodoEntity, initTodos } from '../entities/todo.entity';
 
 /**
@@ -36,7 +36,7 @@ const todosFixture: TodoEntity[] = initTodos([
   },
   {
     id: 'd382a0ab-e34a-478a-9900-fb5b561f3ce0',
-    userId: bobUserId,
+    userId: billUserId,
     label: 'Learn React & Node.js!',
     done: false,
   },
