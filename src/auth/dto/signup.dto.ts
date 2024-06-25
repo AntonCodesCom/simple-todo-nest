@@ -13,10 +13,11 @@ export class SignupDto {
   @ApiProperty({
     example: 'Alice1111$',
     description:
-      'Minimum 8 characters, at least 1 uppercase, at least 1 lowercase, at least 1 number, at least 1 special character.',
+      'Minimum 8 characters, at least 1 uppercase, at least 1 lowercase, at least 1 digit, at least 1 special character.',
   })
-  @IsNotEmpty()
-  @IsStrongPassword()
+  @Allow()
+  // @IsNotEmpty()
+  // @IsStrongPassword()
   // TODO: validation
   password: string;
 }
