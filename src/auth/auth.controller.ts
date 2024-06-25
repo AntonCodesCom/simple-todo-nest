@@ -31,6 +31,8 @@ import UserId from './user-id.decorator';
 import { UserService } from './user.service';
 import { AuthInterceptor } from './auth.interceptor';
 import { SignupDto } from './dto/signup.dto';
+import { LoginValidationDto } from './dto/login-validation.dto';
+import { validateOrReject } from 'class-validator';
 
 @ApiTags('auth')
 @ApiInternalServerErrorResponse()
@@ -58,14 +60,19 @@ export class AuthController {
     type: LoginDto,
   })
   @ApiOkResponse({ type: LoggedInDto })
-  @ApiBadRequestResponse()
   @ApiUnauthorizedResponse()
   @HttpCode(200)
   @Post('login')
   async login(@Body() loginDto: LoginDto): Promise<LoggedInDto> {
-    // if (!isStrongPassword(loginDto.password)) {
-    //   throw new UnauthorizedException(); // invalid password will obviously fail
-    // }
+    const { username, password } = loginDto;
+    const loginValidationDto = new LoginValidationDto();
+    loginValidationDto.username = username;
+    loginValidationDto.password = password;
+    try {
+      await validateOrReject(loginValidationDto);
+    } catch (err) {
+      throw new UnauthorizedException();
+    }
     try {
       return await this.authService.login(loginDto);
     } catch (err) {
