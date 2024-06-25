@@ -18,12 +18,51 @@ describe('SignupDto', () => {
   });
 
   describe('username', () => {
-    test.todo('not a string');
-    test.todo('empty');
-    test.todo('invalid characters (uppercase)');
-    test.todo('no digits');
-    test.todo('no letters');
-    test.todo('starting from a digit');
+    const dto = new SignupDto();
+    dto.password = validPassword;
+
+    test('not a string', async () => {
+      // @ts-ignore: for testing
+      dto.username = 5;
+      const errors = await validate(dto);
+      expect(errors.length).toBeGreaterThan(0);
+    });
+
+    test('empty string', async () => {
+      dto.username = '';
+      const errors = await validate(dto);
+      expect(errors.length).toBeGreaterThan(0);
+    });
+
+    test('uppercase characters', async () => {
+      dto.username = 'User1111';
+      const errors = await validate(dto);
+      expect(errors.length).toBeGreaterThan(0);
+    });
+
+    test('invalid characters', async () => {
+      dto.username = 'user1111$';
+      const errors = await validate(dto);
+      expect(errors.length).toBeGreaterThan(0);
+    });
+
+    test('starting from a digit', async () => {
+      dto.username = '1user111';
+      const errors = await validate(dto);
+      expect(errors.length).toBeGreaterThan(0);
+    });
+
+    test('less than 4 characters long', async () => {
+      dto.username = 'abc';
+      const errors = await validate(dto);
+      expect(errors.length).toBeGreaterThan(0);
+    });
+
+    test('more than 64 characters long', async () => {
+      dto.username = faker.string.alpha(65).toLowerCase();
+      const errors = await validate(dto);
+      expect(errors.length).toBeGreaterThan(0);
+    });
   });
 
   describe('password', () => {

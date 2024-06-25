@@ -1,13 +1,25 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Allow, IsNotEmpty, IsStrongPassword } from 'class-validator';
+import {
+  Allow,
+  IsAlphanumeric,
+  IsLowercase,
+  IsNotEmpty,
+  IsString,
+  IsStrongPassword,
+  Matches,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class SignupDto {
   @ApiProperty({
     example: 'alice',
   })
-  // @IsNotEmpty()
-  @Allow()
-  // TODO: validation
+  @IsLowercase()
+  @IsAlphanumeric()
+  @Matches(/^[a-z]/)
+  @MinLength(4)
+  @MaxLength(64)
   username: string;
 
   @ApiProperty({
