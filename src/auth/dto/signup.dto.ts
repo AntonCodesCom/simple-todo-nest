@@ -1,10 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  Allow,
   IsAlphanumeric,
   IsLowercase,
-  IsNotEmpty,
-  IsString,
   IsStrongPassword,
   Matches,
   MaxLength,
@@ -27,9 +24,6 @@ export class SignupDto {
     description:
       'Minimum 8 characters, at least 1 uppercase, at least 1 lowercase, at least 1 digit, at least 1 special character.',
   })
-  @Allow()
-  // @IsNotEmpty()
-  // @IsStrongPassword()
-  // TODO: validation
+  @IsStrongPassword()
   password: string;
 }

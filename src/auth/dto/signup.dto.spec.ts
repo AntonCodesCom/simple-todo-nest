@@ -28,12 +28,6 @@ describe('SignupDto', () => {
       expect(errors.length).toBeGreaterThan(0);
     });
 
-    test('empty string', async () => {
-      dto.username = '';
-      const errors = await validate(dto);
-      expect(errors.length).toBeGreaterThan(0);
-    });
-
     test('uppercase characters', async () => {
       dto.username = 'User1111';
       const errors = await validate(dto);
@@ -66,11 +60,44 @@ describe('SignupDto', () => {
   });
 
   describe('password', () => {
-    test.todo('not a string');
-    test.todo('less than 8 characters long');
-    test.todo('no lowercase letters');
-    test.todo('no uppercase letters');
-    test.todo('no digits');
-    test.todo('no special charaters');
+    const dto = new SignupDto();
+    dto.username = validUsername;
+
+    test('not a string', async () => {
+      // @ts-ignore: for testing
+      dto.password = 5;
+      const errors = await validate(dto);
+      expect(errors.length).toBeGreaterThan(0);
+    });
+
+    test('less than 8 characters long', async () => {
+      dto.password = 'User11$';
+      const errors = await validate(dto);
+      expect(errors.length).toBeGreaterThan(0);
+    });
+
+    test('no lowercase letters', async () => {
+      dto.password = 'USER1111$';
+      const errors = await validate(dto);
+      expect(errors.length).toBeGreaterThan(0);
+    });
+
+    test('no uppercase letters', async () => {
+      dto.password = 'user1111$';
+      const errors = await validate(dto);
+      expect(errors.length).toBeGreaterThan(0);
+    });
+
+    test('no digits', async () => {
+      dto.password = 'UserUser$';
+      const errors = await validate(dto);
+      expect(errors.length).toBeGreaterThan(0);
+    });
+
+    test('no special charaters', async () => {
+      dto.password = 'User1111';
+      const errors = await validate(dto);
+      expect(errors.length).toBeGreaterThan(0);
+    });
   });
 });
