@@ -49,7 +49,7 @@ export class AuthService {
 
   private generateAccessToken(userId: string): string {
     return sign({ sub: userId }, this.envService.jwtSecret, {
-      expiresIn: '4w',
+      expiresIn: '7d',
     });
   }
 
