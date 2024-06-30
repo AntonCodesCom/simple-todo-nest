@@ -25,7 +25,7 @@ A Todo app backend built with NestJS.
 
         npm install
 
-1.  Define necessary environment variables (see instructions in the [`.env.example`](`.env.example`) file).
+1.  Define necessary environment variables (see instructions in the [`.env.example`](.env.example) file).
 
 ## Running the app
 
