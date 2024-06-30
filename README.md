@@ -1,6 +1,6 @@
 # Simple Todo (NestJS)
 
-A Todo app backend built with NestJS.
+A Todo app API backend built with NestJS.
 
 ## Features
 
@@ -20,6 +20,9 @@ A Todo app backend built with NestJS.
 ## Installation
 
 1.  Clone this repository.
+
+        git clone https://github.com/AntonCodesCom/simple-todo-nest
+        cd simple-todo-nest
 
 1.  Install dependencies:
 
