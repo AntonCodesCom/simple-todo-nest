@@ -6,7 +6,7 @@ import { validate } from 'class-validator';
 // unit test
 //
 describe('SignupDto', () => {
-  const validUsername = faker.person.firstName().toLowerCase();
+  const validUsername = `${faker.person.firstName().toLowerCase()}_${faker.number.int()}`;
   const validPassword = 'User1111$' + faker.string.sample();
 
   test('valid data', async () => {
