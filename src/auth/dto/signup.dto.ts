@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsAlphanumeric,
   IsLowercase,
   IsStrongPassword,
   Matches,
@@ -13,8 +12,7 @@ export class SignupDto {
     example: 'alice',
   })
   @IsLowercase()
-  @IsAlphanumeric()
-  @Matches(/^[a-z]/)
+  @Matches(/^[a-z]+[a-z0-9_]*$/)
   @MinLength(4)
   @MaxLength(64)
   username: string;
