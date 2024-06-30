@@ -10,6 +10,8 @@ import {
 export class SignupDto {
   @ApiProperty({
     example: 'alice',
+    description:
+      'Lowercase Latin letters, digits and underscores, starting from a letter.',
   })
   @IsLowercase()
   @Matches(/^[a-z]+[a-z0-9_]*$/)

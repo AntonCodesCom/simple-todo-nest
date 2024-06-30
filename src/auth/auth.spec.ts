@@ -41,8 +41,8 @@ describe('Auth REST', () => {
   // login
   describe('POST /auth/login', () => {
     const dto: LoginDto = {
-      username: faker.person.firstName(),
-      password: faker.string.sample(),
+      username: faker.person.firstName().toLowerCase(),
+      password: 'User123$' + faker.string.alphanumeric(8),
     };
 
     test('happy path', async () => {
