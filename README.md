@@ -2,6 +2,11 @@
 
 A Todo app API backend built with NestJS.
 
+This is the backend for the Todo app frontend:
+
+- Remix version: https://github.com/AntonCodesCom/simple-todo-remix
+- Next.js version: https://github.com/AntonCodesCom/simple-todo-nextjs
+
 ## Features
 
 - Todo CRUD RESTful API.

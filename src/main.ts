@@ -27,7 +27,7 @@ async function bootstrap() {
       .addBearerAuth({
         type: 'http',
         scheme: 'bearer',
-        bearerFormat: 'uuid',
+        bearerFormat: 'uuid', // TODO
         in: 'header',
       })
       .addTag('seed')
